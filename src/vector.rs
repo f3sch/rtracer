@@ -15,6 +15,11 @@ impl Vector {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
+
+    /// Calculate the Length/Magnitude of a Vector.
+    pub fn magnitude(self) -> f64 {
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+    }
 }
 
 impl Add for Vector {
@@ -137,5 +142,40 @@ mod test {
         assert_eq!(b.x, -1.0);
         assert_eq!(b.y, 1.5);
         assert_eq!(b.z, -2.0);
+    }
+
+    #[test]
+    fn mag_x_vector() {
+        let v = Vector::new(1.0, 0.0, 0.0);
+
+        assert_eq!(v.magnitude(), 1.0);
+    }
+
+    #[test]
+    fn mag_y_vector() {
+        let v = Vector::new(0.0, 1.0, 0.0);
+
+        assert_eq!(v.magnitude(), 1.0);
+    }
+
+    #[test]
+    fn mag_z_vector() {
+        let v = Vector::new(0.0, 0.0, 1.0);
+
+        assert_eq!(v.magnitude(), 1.0);
+    }
+
+    #[test]
+    fn mag_pos_vector() {
+        let v = Vector::new(1.0, 2.0, 3.0);
+
+        assert_eq!(v.magnitude(), 14_f64.sqrt());
+    }
+
+    #[test]
+    fn mag_neg_vector() {
+        let v = Vector::new(-1.0, -2.0, -3.0);
+
+        assert_eq!(v.magnitude(), 14_f64.sqrt());
     }
 }
