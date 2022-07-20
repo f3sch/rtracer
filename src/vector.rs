@@ -31,6 +31,20 @@ impl Vector {
             z: self.z / mag,
         }
     }
+
+    /// Calculate the dot product of two Vectors
+    pub fn dot(self, other: Self) -> f64 {
+        self.x * other.x + self.y * other.y + self.z * other.z
+    }
+
+    /// Calculate the cross product of two Vectors
+    pub fn cross(self, other: Self) -> Self {
+        Self {
+            x: self.y * other.z - self.z * other.y,
+            y: self.z * other.x - self.x * other.z,
+            z: self.x * other.y - self.y * other.x,
+        }
+    }
 }
 
 impl Add for Vector {
@@ -203,19 +217,36 @@ mod test {
         let v = Vector::new(4.0, 0.0, 0.0);
 
         assert_eq!(v.normalize(), Vector::new(1.0, 0.0, 0.0));
-}
+    }
 
     #[test]
     fn norm_approx_vector() {
-        let v = Vector::new(1.0,2.0,3.0);
+        let v = Vector::new(1.0, 2.0, 3.0);
 
         assert_eq!(v.normalize(), Vector::new(0.26726, 0.53452, 0.80178));
     }
 
     #[test]
     fn norm_magnitude_vector() {
-        let v = Vector::new(1.0,2.0,3.0);
+        let v = Vector::new(1.0, 2.0, 3.0);
 
         assert_eq!(v.normalize().magnitude(), 1.0);
+    }
+
+    #[test]
+    fn dot_vector() {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(2.0, 3.0, 4.0);
+
+        assert_eq!(a.dot(b), 20.0);
+    }
+
+    #[test]
+    fn cross_vector() {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(2.0, 3.0, 4.0);
+
+        assert_eq!(a.cross(b), Vector::new(-1.0, 2.0, -1.0));
+        assert_eq!(b.cross(a), Vector::new(1.0, -2.0, 1.0));
     }
 }
