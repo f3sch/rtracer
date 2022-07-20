@@ -1,6 +1,8 @@
+use float_eq::float_eq;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// The Vector in a left-coordinate system.
+#[derive(Debug, Copy, Clone)]
 pub struct Vector {
     /// Distance from origin along the X axis.
     pub x: f64,
@@ -19,6 +21,15 @@ impl Vector {
     /// Calculate the Length/Magnitude of a Vector.
     pub fn magnitude(self) -> f64 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+    }
+
+    pub fn normalize(self) -> Self {
+        let mag = self.magnitude();
+        Self {
+            x: self.x / mag,
+            y: self.y / mag,
+            z: self.z / mag,
+        }
     }
 }
 
@@ -74,6 +85,14 @@ impl Div<f64> for Vector {
             y: self.y / other,
             z: self.z / other,
         }
+    }
+}
+
+impl PartialEq for Vector {
+    fn eq(&self, other: &Self) -> bool {
+        float_eq!(self.x, other.x, abs <= 0.00001)
+            && float_eq!(self.y, other.y, abs <= 0.00001)
+            && float_eq!(self.z, other.z, abs <= 0.00001)
     }
 }
 
@@ -177,5 +196,26 @@ mod test {
         let v = Vector::new(-1.0, -2.0, -3.0);
 
         assert_eq!(v.magnitude(), 14_f64.sqrt());
+    }
+
+    #[test]
+    fn norm_gives_1_vector() {
+        let v = Vector::new(4.0, 0.0, 0.0);
+
+        assert_eq!(v.normalize(), Vector::new(1.0, 0.0, 0.0));
+}
+
+    #[test]
+    fn norm_approx_vector() {
+        let v = Vector::new(1.0,2.0,3.0);
+
+        assert_eq!(v.normalize(), Vector::new(0.26726, 0.53452, 0.80178));
+    }
+
+    #[test]
+    fn norm_magnitude_vector() {
+        let v = Vector::new(1.0,2.0,3.0);
+
+        assert_eq!(v.normalize().magnitude(), 1.0);
     }
 }
