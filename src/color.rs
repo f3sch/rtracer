@@ -16,6 +16,25 @@ impl RGB {
     pub fn new(red: f64, green: f64, blue: f64) -> Self {
         Self { red, green, blue }
     }
+
+    pub fn ppm_clamp(&self) -> String {
+        let c_red = clamp(self.red);
+        let c_green = clamp(self.green);
+        let c_blue = clamp(self.blue);
+        format!("{} {} {}", c_red, c_green, c_blue)
+    }
+}
+
+// clamp function for RGB
+fn clamp(c: f64) -> u8 {
+    let c = c * 255.0;
+    if c > 255.0 {
+        255u8
+    } else if c < 0.0 {
+        0u8
+    } else {
+        c as u8
+    }
 }
 
 impl Add for RGB {
@@ -101,10 +120,10 @@ mod test {
 
     #[test]
     fn mul_color_color() {
-        let c1 = RGB::new(1.0,0.2,0.4);
-        let c2 = RGB::new(0.9,1.0,0.1);
+        let c1 = RGB::new(1.0, 0.2, 0.4);
+        let c2 = RGB::new(0.9, 1.0, 0.1);
 
-        assert_eq!(c1 * c2, RGB::new(0.9,0.2,0.04));
+        assert_eq!(c1 * c2, RGB::new(0.9, 0.2, 0.04));
     }
 
     #[test]
@@ -113,5 +132,23 @@ mod test {
         let s = 2.0;
 
         assert_eq!(c * s, RGB::new(0.4, 0.6, 0.8));
+    }
+
+    #[test]
+    fn clamp_color() {
+        let a = 1.5;
+        let b = 0.7;
+        let c = -0.2;
+
+        assert_eq!(clamp(a), 255);
+        assert_eq!(clamp(b), 178);
+        assert_eq!(clamp(c), 0);
+    }
+
+    #[test]
+    fn clamp_rgb_color() {
+        let c = RGB::new(-0.2, 0.7, 1.5);
+
+        assert_eq!(String::from("0 178 255"), c.ppm_clamp());
     }
 }
