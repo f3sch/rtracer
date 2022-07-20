@@ -1,6 +1,8 @@
 use std::ops::{Add, Neg, Sub};
+use crate::Vector;
 
 /// The Point in a left-coordinate system from the origin.
+#[derive(Debug)]
 pub struct Point {
     /// Distance from origin along the X axis.
     pub x: f64,
@@ -14,6 +16,17 @@ impl Point {
     /// Creates a Point in space.
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
+    }
+}
+
+impl Add<Vector> for Point{
+    type Output = Self;
+    fn add(self, other: Vector) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
     }
 }
 
