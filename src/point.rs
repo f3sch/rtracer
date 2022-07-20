@@ -2,7 +2,7 @@ use std::ops::{Add, Neg, Sub};
 use crate::Vector;
 
 /// The Point in a left-coordinate system from the origin.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Point {
     /// Distance from origin along the X axis.
     pub x: f64,

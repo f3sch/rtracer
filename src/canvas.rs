@@ -4,11 +4,11 @@ use crate::color::RGB;
 #[derive(Debug)]
 pub struct Canvas {
     /// Width of the Canvas.
-    width: usize,
+    pub width: usize,
     /// Height of the Canvas.
-    height: usize,
+    pub height: usize,
     /// Pixels of the Canvas. TODO Avoid heap allocations!
-    pixels: Vec<Vec<RGB>>,
+    pub pixels: Vec<Vec<RGB>>,
 }
 
 impl Canvas {
