@@ -1,4 +1,4 @@
-use std::ops::{Add, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// The Vector in a left-coordinate system.
 pub struct Vector {
@@ -50,6 +50,28 @@ impl Neg for Vector {
     }
 }
 
+impl Mul<f64> for Vector {
+    type Output = Self;
+    fn mul(self, other: f64) -> Self {
+        Self {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+        }
+    }
+}
+
+impl Div<f64> for Vector {
+    type Output = Self;
+    fn div(self, other: f64) -> Self {
+        Self {
+            x: self.x / other,
+            y: self.y / other,
+            z: self.z / other,
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -87,11 +109,33 @@ mod test {
 
     #[test]
     fn neg_vectors() {
-        let a = Vector::new(1.0,2.0,3.0);
+        let a = Vector::new(1.0, 2.0, 3.0);
         let b = -a;
 
         assert_eq!(b.x, -1.0);
         assert_eq!(b.y, -2.0);
         assert_eq!(b.z, -3.0);
+    }
+
+    #[test]
+    fn scal_mult_vector() {
+        let a = Vector::new(-2.0, 3.0, -4.0);
+        let s = 3.5;
+        let b = a * s;
+
+        assert_eq!(b.x, -7.0);
+        assert_eq!(b.y, 10.5);
+        assert_eq!(b.z, -14.0);
+    }
+
+    #[test]
+    fn scal_div_vector() {
+        let a = Vector::new(-2.0, 3.0, -4.0);
+        let s = 2.0;
+        let b = a / s;
+
+        assert_eq!(b.x, -1.0);
+        assert_eq!(b.y, 1.5);
+        assert_eq!(b.z, -2.0);
     }
 }
