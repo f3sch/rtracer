@@ -9,3 +9,6 @@ pub use crate::color::RGB;
 
 mod canvas;
 pub use crate::canvas::Canvas;
+
+mod matrix;
+pub use crate::matrix::Matrix;
