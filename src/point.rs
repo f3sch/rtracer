@@ -1,6 +1,9 @@
 use crate::Vector;
 use float_eq::float_eq;
-use std::ops::{Add, Neg, Sub};
+use std::{
+    fmt,
+    ops::{Add, Neg, Sub},
+};
 
 /// The Point in a left-coordinate system from the origin.
 #[derive(Debug, Clone, Copy)]
@@ -71,6 +74,19 @@ impl PartialEq for Point {
             && float_eq!(self.z, other.z, abs <= 0.00001)
     }
 }
+
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "x: {0:>10} y: {1:>10} z: {2:>10}",
+            format!("{0:.5}", self.x),
+            format!("{0:.5}", self.y),
+            format!("{0:.5}", self.z)
+        )
+    }
+}
+
 
 #[cfg(test)]
 mod test {
