@@ -22,6 +22,16 @@ impl Matrix {
     pub fn new(data: [[f64; 4]; 4]) -> Self {
         Self { data }
     }
+
+    pub fn transpose(&self) -> Self {
+        let mut trans = IDENTITY;
+        for r in 0..4 {
+            for c in 0..4 {
+                trans[c][r] = self[r][c];
+            }
+        }
+        trans
+    }
 }
 
 impl Mul for Matrix {
@@ -257,5 +267,29 @@ mod test {
         ]);
 
         assert_eq!(IDENTITY * a, a);
+    }
+
+    #[test]
+    fn transpose_matrix() {
+        let a = Matrix::new([
+            [0.0, 9.0, 3.0, 0.0],
+            [9.0, 8.0, 0.0, 8.0],
+            [1.0, 8.0, 5.0, 3.0],
+            [0.0, 0.0, 5.0, 8.0],
+        ]);
+        let t = Matrix::new([
+            [0.0, 9.0, 1.0, 0.0],
+            [9.0, 8.0, 8.0, 0.0],
+            [3.0, 0.0, 5.0, 5.0],
+            [0.0, 8.0, 3.0, 8.0],
+        ]);
+
+        assert_eq!(a.transpose(), t);
+
+    }
+
+    #[test]
+    fn transpose_id_matrix(){
+        assert_eq!(IDENTITY.transpose(), IDENTITY);
     }
 }
