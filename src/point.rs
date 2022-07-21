@@ -1,5 +1,6 @@
-use std::ops::{Add, Neg, Sub};
 use crate::Vector;
+use float_eq::float_eq;
+use std::ops::{Add, Neg, Sub};
 
 /// The Point in a left-coordinate system from the origin.
 #[derive(Debug, Clone, Copy)]
@@ -19,7 +20,7 @@ impl Point {
     }
 }
 
-impl Add<Vector> for Point{
+impl Add<Vector> for Point {
     type Output = Self;
     fn add(self, other: Vector) -> Self {
         Self {
@@ -60,6 +61,14 @@ impl Neg for Point {
             y: -self.y,
             z: -self.z,
         }
+    }
+}
+
+impl PartialEq for Point {
+    fn eq(&self, other: &Self) -> bool {
+        float_eq!(self.x, other.x, abs <= 0.00001)
+            && float_eq!(self.y, other.y, abs <= 0.00001)
+            && float_eq!(self.z, other.z, abs <= 0.00001)
     }
 }
 

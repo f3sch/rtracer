@@ -1,3 +1,4 @@
+use crate::{Point, Vector};
 use float_eq::float_eq;
 use std::ops::{Index, IndexMut, Mul};
 
@@ -11,6 +12,63 @@ impl Matrix {
     /// Create a new 4x4 Matrix
     pub fn new(data: [[f64; 4]; 4]) -> Self {
         Self { data }
+    }
+}
+
+impl Mul for Matrix {
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
+        let mut data = [[0.0; 4]; 4];
+
+        for r in 0..4 {
+            for c in 0..4 {
+                data[r][c] = self[r][0] * rhs[0][c]
+                    + self[r][1] * rhs[1][c]
+                    + self[r][2] * rhs[2][c]
+                    + self[r][3] * rhs[3][c];
+            }
+        }
+        Self { data }
+    }
+}
+
+impl Mul<Vector> for Matrix {
+    type Output = Vector;
+    fn mul(self, rhs: Vector) -> Self::Output {
+        Vector {
+            x: (self[0][0] * rhs.x)
+                + (self[0][1] * rhs.y)
+                + (self[0][2] * rhs.z)
+                + (self[0][3] * 1.0),
+            y: (self[1][0] * rhs.x)
+                + (self[1][1] * rhs.y)
+                + (self[1][2] * rhs.z)
+                + (self[1][3] * 1.0),
+            z: (self[2][0] * rhs.x)
+                + (self[2][1] * rhs.y)
+                + (self[2][2] * rhs.z)
+                + (self[2][3] * 1.0),
+        }
+    }
+}
+
+impl Mul<Point> for Matrix {
+    type Output = Point;
+    fn mul(self, rhs: Point) -> Self::Output {
+        Point {
+            x: (self[0][0] * rhs.x)
+                + (self[0][1] * rhs.y)
+                + (self[0][2] * rhs.z)
+                + (self[0][3] * 1.0),
+            y: (self[1][0] * rhs.x)
+                + (self[1][1] * rhs.y)
+                + (self[1][2] * rhs.z)
+                + (self[1][3] * 1.0),
+            z: (self[2][0] * rhs.x)
+                + (self[2][1] * rhs.y)
+                + (self[2][2] * rhs.z)
+                + (self[2][3] * 1.0),
+        }
     }
 }
 
@@ -29,10 +87,10 @@ impl IndexMut<usize> for Matrix {
 }
 
 impl PartialEq for Matrix {
-    fn eq(&self, other: &Self) -> bool {
+    fn eq(&self, rhs: &Self) -> bool {
         for r in 0..4 {
             for c in 0..4 {
-                if !float_eq!(self.data[r][c], other.data[r][c], abs <= 0.00001) {
+                if !float_eq!(self.data[r][c], rhs.data[r][c], abs <= 0.00001) {
                     return false;
                 }
             }
@@ -93,38 +151,76 @@ mod test {
     }
 
     #[test]
-    fn compare_eq_matrix(){
+    fn compare_eq_matrix() {
         let a = Matrix::new([
-            [1.0,2.0,3.0,4.0],
-            [5.0,6.0,7.0,8.0],
-            [9.0,8.0,7.0,6.0],
-            [5.0,4.0,3.0,2.0],
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
         ]);
         let b = Matrix::new([
-            [1.0,2.0,3.0,4.0],
-            [5.0,6.0,7.0,8.0],
-            [9.0,8.0,7.0,6.0],
-            [5.0,4.0,3.0,2.0],
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
         ]);
 
-        assert_eq!(a,b);
+        assert_eq!(a, b);
     }
 
     #[test]
-    fn compare_neq_matrix(){
+    fn compare_neq_matrix() {
         let a = Matrix::new([
-            [1.0,2.0,3.0,4.0],
-            [5.0,6.0,7.0,8.0],
-            [9.0,8.0,7.0,6.0],
-            [5.0,4.0,3.0,2.0],
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
         ]);
         let b = Matrix::new([
-            [2.0,3.0,4.0,5.0],
-            [6.0,7.0,8.0,9.0],
-            [8.0,7.0,6.0,5.0],
-            [4.0,3.0,2.0,1.0],
+            [2.0, 3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0, 9.0],
+            [8.0, 7.0, 6.0, 5.0],
+            [4.0, 3.0, 2.0, 1.0],
         ]);
 
-        assert_ne!(a,b);
+        assert_ne!(a, b);
+    }
+
+    #[test]
+    fn mul_matrix() {
+        let a = Matrix::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
+        ]);
+        let b = Matrix::new([
+            [-2.0, 1.0, 2.0, 3.0],
+            [3.0, 2.0, 1.0, -1.0],
+            [4.0, 3.0, 6.0, 5.0],
+            [1.0, 2.0, 7.0, 8.0],
+        ]);
+        let c = Matrix::new([
+            [20.0, 22.0, 50.0, 48.0],
+            [44.0, 54.0, 114.0, 108.0],
+            [40.0, 58.0, 110.0, 102.0],
+            [16.0, 26.0, 46.0, 42.0],
+        ]);
+
+        assert_eq!(a * b, c);
+    }
+
+    #[test]
+    fn mul_point_matrix(){
+        let a = Matrix::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [2.0, 4.0, 4.0, 2.0],
+            [8.0, 6.0, 4.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        let b = Point::new(1.0,2.0,3.0);
+        let c = Point::new(18.0,24.0,33.0);
+
+        assert_eq!(a*b,c);
     }
 }
