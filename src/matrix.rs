@@ -3,10 +3,19 @@ use float_eq::float_eq;
 use std::ops::{Index, IndexMut, Mul};
 
 /// Matrix 4x4 implementation (rows first)
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Matrix {
     pub data: [[f64; 4]; 4],
 }
+
+pub const IDENTITY: Matrix = Matrix {
+    data: [
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ],
+};
 
 impl Matrix {
     /// Create a new 4x4 Matrix
@@ -211,16 +220,42 @@ mod test {
     }
 
     #[test]
-    fn mul_point_matrix(){
+    fn mul_point_matrix() {
         let a = Matrix::new([
             [1.0, 2.0, 3.0, 4.0],
             [2.0, 4.0, 4.0, 2.0],
             [8.0, 6.0, 4.0, 1.0],
             [0.0, 0.0, 0.0, 1.0],
         ]);
-        let b = Point::new(1.0,2.0,3.0);
-        let c = Point::new(18.0,24.0,33.0);
+        let b = Point::new(1.0, 2.0, 3.0);
+        let c = Point::new(18.0, 24.0, 33.0);
 
-        assert_eq!(a*b,c);
+        assert_eq!(a * b, c);
+    }
+
+    #[test]
+    fn mul_vector_matrix() {
+        let a = Matrix::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [2.0, 4.0, 4.0, 2.0],
+            [8.0, 6.0, 4.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        let b = Vector::new(1.0, 2.0, 3.0);
+        let c = Vector::new(18.0, 24.0, 33.0);
+
+        assert_eq!(a * b, c);
+    }
+
+    #[test]
+    fn mul_id_matrix() {
+        let a = Matrix::new([
+            [0.0, 1.0, 2.0, 4.0],
+            [1.0, 2.0, 4.0, 8.0],
+            [2.0, 4.0, 8.0, 16.0],
+            [4.0, 8.0, 16.0, 32.0],
+        ]);
+
+        assert_eq!(IDENTITY * a, a);
     }
 }
