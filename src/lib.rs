@@ -13,3 +13,6 @@ pub use crate::canvas::Canvas;
 mod matrix;
 pub use crate::matrix::Matrix;
 pub use crate::matrix::IDENTITY;
+
+mod transformations;
+pub use crate::transformations::Transformation;
