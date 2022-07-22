@@ -126,15 +126,15 @@ impl Mul<Vector> for Matrix {
             x: (self[0][0] * rhs.x)
                 + (self[0][1] * rhs.y)
                 + (self[0][2] * rhs.z)
-                + (self[0][3] * 1.0),
+                + (self[0][3] * 0.0),
             y: (self[1][0] * rhs.x)
                 + (self[1][1] * rhs.y)
                 + (self[1][2] * rhs.z)
-                + (self[1][3] * 1.0),
+                + (self[1][3] * 0.0),
             z: (self[2][0] * rhs.x)
                 + (self[2][1] * rhs.y)
                 + (self[2][2] * rhs.z)
-                + (self[2][3] * 1.0),
+                + (self[2][3] * 0.0),
         }
     }
 }
@@ -346,7 +346,7 @@ mod test {
             [0.0, 0.0, 0.0, 1.0],
         ]);
         let b = Vector::new(1.0, 2.0, 3.0);
-        let c = Vector::new(18.0, 24.0, 33.0);
+        let c = Vector::new(14.0, 22.0, 32.0);
 
         assert_eq!(a * b, c);
     }
