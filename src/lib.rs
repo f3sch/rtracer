@@ -16,3 +16,6 @@ pub use crate::matrix::IDENTITY;
 
 mod transformations;
 pub use crate::transformations::Transformation;
+
+mod ray;
+pub use crate::ray::Ray;
