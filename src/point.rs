@@ -46,9 +46,9 @@ impl Add for Point {
 }
 
 impl Sub for Point {
-    type Output = Self;
-    fn sub(self, other: Self) -> Self {
-        Self {
+    type Output = Vector;
+    fn sub(self, other: Self) -> Self::Output {
+        Vector {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,

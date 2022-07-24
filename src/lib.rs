@@ -19,3 +19,9 @@ pub use crate::transformations::Transformation;
 
 mod ray;
 pub use crate::ray::Ray;
+
+mod shapes;
+pub use crate::shapes::Sphere;
+
+mod intersection;
+pub use crate::intersection::Intersection;

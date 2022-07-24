@@ -7,9 +7,9 @@ use crate::{Point, Vector};
 #[derive(Debug, Clone, Copy)]
 pub struct Ray {
     /// Starting point.
-    origin: Point,
+    pub origin: Point,
     /// Direction from origin.
-    direction: Vector,
+    pub direction: Vector,
 }
 
 impl Ray {
