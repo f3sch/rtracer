@@ -1,5 +1,4 @@
-use crate::{Point, Vector};
-use float_eq::float_eq;
+use crate::{float_eq, Point, Vector};
 use std::{
     fmt,
     ops::{Index, IndexMut, Mul},
@@ -177,7 +176,7 @@ impl PartialEq for Matrix {
     fn eq(&self, rhs: &Self) -> bool {
         for r in 0..4 {
             for c in 0..4 {
-                if !float_eq!(self.data[r][c], rhs.data[r][c], abs <= 0.00001) {
+                if !float_eq(self.data[r][c], rhs.data[r][c]) {
                     return false;
                 }
             }

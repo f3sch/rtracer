@@ -23,12 +23,12 @@ impl Sphere {
     }
 }
 
-impl Shape<Sphere> for Sphere {
+impl Shape for Sphere {
     fn id(&self) -> Uuid {
         self.uuid
     }
 
-    fn intersect(&self, ray: &Ray) -> Option<[Intersection<Self>; 2]> {
+    fn intersect(&self, ray: &Ray) -> Option<Vec<Intersection>> {
         let sphere_to_ray = ray.origin - self.origin;
         let a = ray.direction.dot(ray.direction);
         let b = 2.0 * ray.direction.dot(sphere_to_ray);
@@ -40,7 +40,7 @@ impl Shape<Sphere> for Sphere {
         } else {
             let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
-            Some([Intersection::new(t1, &self), Intersection::new(t2, &self)])
+            Some(vec![Intersection::new(t1, self), Intersection::new(t2, self)])
         }
     }
 }
@@ -130,7 +130,7 @@ mod test {
         assert_eq!(xs.is_some(), true);
         let xs = xs.unwrap();
 
-        assert_eq!(xs[0].object, &s);
-        assert_eq!(xs[1].object, &s);
+        assert_eq!(xs[0].object.eq(&s),true);
+        assert_eq!(xs[1].object.eq(&s),true);
     }
 }

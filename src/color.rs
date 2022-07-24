@@ -1,4 +1,4 @@
-use float_eq::float_eq;
+use crate::float_eq;
 use std::ops::{Add, Mul, Sub};
 
 /// RGB color object
@@ -83,9 +83,9 @@ impl Mul<RGB> for RGB {
 
 impl PartialEq for RGB {
     fn eq(&self, other: &Self) -> bool {
-        float_eq!(self.red, other.red, abs <= 0.00001)
-            && float_eq!(self.green, other.green, abs <= 0.00001)
-            && float_eq!(self.blue, other.blue, abs <= 0.00001)
+        float_eq(self.red, other.red)
+            && float_eq(self.green, other.green)
+            && float_eq(self.blue, other.blue)
     }
 }
 

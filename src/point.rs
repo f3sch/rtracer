@@ -1,5 +1,4 @@
-use crate::Vector;
-use float_eq::float_eq;
+use crate::{float_eq, Vector};
 use std::{
     fmt,
     ops::{Add, Neg, Sub},
@@ -69,9 +68,7 @@ impl Neg for Point {
 
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
-        float_eq!(self.x, other.x, abs <= 0.00001)
-            && float_eq!(self.y, other.y, abs <= 0.00001)
-            && float_eq!(self.z, other.z, abs <= 0.00001)
+        float_eq(self.x, other.x) && float_eq(self.y, other.y) && float_eq(self.z, other.z)
     }
 }
 
@@ -86,7 +83,6 @@ impl fmt::Display for Point {
         )
     }
 }
-
 
 #[cfg(test)]
 mod test {

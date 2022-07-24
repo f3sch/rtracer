@@ -1,4 +1,4 @@
-use float_eq::float_eq;
+use crate::float_eq;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// The Vector in a left-coordinate system.
@@ -104,9 +104,7 @@ impl Div<f64> for Vector {
 
 impl PartialEq for Vector {
     fn eq(&self, other: &Self) -> bool {
-        float_eq!(self.x, other.x, abs <= 0.00001)
-            && float_eq!(self.y, other.y, abs <= 0.00001)
-            && float_eq!(self.z, other.z, abs <= 0.00001)
+        float_eq(self.x, other.x) && float_eq(self.y, other.y) && float_eq(self.z, other.z)
     }
 }
 
