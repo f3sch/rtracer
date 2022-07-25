@@ -3,6 +3,7 @@ use crate::*;
 /// The transformation object describes a general transformation on any object.
 /// The abstraction happens since I did not implement the proper tuple as described
 /// by the book.
+#[derive(Debug,Clone, Copy)]
 pub struct Transformation {
     data: [[f64; 4]; 4],
 }

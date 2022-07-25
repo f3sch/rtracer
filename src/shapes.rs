@@ -1,4 +1,4 @@
-use crate::{intersection::Intersection, Ray};
+use crate::{intersection::Intersection, Transformation, Ray};
 use std::fmt::Debug;
 use uuid::Uuid;
 
@@ -8,9 +8,15 @@ pub trait Shape: Debug {
     fn id(&self) -> Uuid;
 
     /// check for equaltiy
-    fn eq(&self, other: &dyn Shape) -> bool{
+    fn eq(&self, other: &dyn Shape) -> bool {
         self.id() == other.id()
     }
+
+    /// Every shape has an internal transformation matrix
+    fn get_transform(&self) -> Transformation;
+
+    /// Set the transformation of any shape
+    fn set_transform(&mut self, t: Transformation);
 
     /// A ray _can_ intersect a shape.
     /// This returns a collection of unit time(s) 't',

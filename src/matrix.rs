@@ -85,9 +85,9 @@ impl Matrix {
 
     /// Calculate the inverse of a Matrix.
     /// Returns a Result<> because not every matrix is invertible.
-    pub fn inverse(&self, s: usize) -> Result<Matrix, &str> {
+    pub fn inverse(&self, s: usize) -> Option<Matrix> {
         if !self.is_invertible(s) {
-            Err("Matrix is not invertible!")
+            None
         } else {
             let mut inverse = Matrix::default();
             let d = self.determinant(s);
@@ -96,7 +96,7 @@ impl Matrix {
                     inverse[c][r] = self.cofactor(r, c, s - 1) / d;
                 }
             }
-            Ok(inverse)
+            Some(inverse)
         }
     }
 }
@@ -537,7 +537,7 @@ mod test {
         assert_eq!(a.determinant(4), 532.0);
         assert_eq!(a.cofactor(2, 3, 3), -160.0);
         assert_eq!(a.cofactor(3, 2, 3), 105.0);
-        assert_eq!(b_res.is_ok(), true);
+        assert_eq!(b_res.is_some(), true);
         assert_eq!(-160.0 / 532.0, b[3][2]);
         assert_eq!(105.0 / 532.0, b[2][3]);
         assert_eq!(res, b);
