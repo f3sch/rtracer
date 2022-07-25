@@ -99,6 +99,11 @@ impl Matrix {
             Some(inverse)
         }
     }
+
+    /// Return raw data
+    pub fn get_data(&self) -> [[f64;4];4]{
+        self.data
+    }
 }
 
 impl Mul for Matrix {

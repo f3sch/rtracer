@@ -31,5 +31,5 @@ impl PartialEq for dyn Shape {
 }
 
 /// export all known shapes
-mod sphere;
+pub mod sphere;
 pub use sphere::Sphere;

@@ -1,9 +1,10 @@
 use crate::*;
+use std::ops::Mul;
 
 /// The transformation object describes a general transformation on any object.
 /// The abstraction happens since I did not implement the proper tuple as described
 /// by the book.
-#[derive(Debug,Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Transformation {
     data: [[f64; 4]; 4],
 }
@@ -96,6 +97,14 @@ impl Transformation {
                 [0.0, 0.0, 0.0, 0.0],
             ],
         }
+    }
+}
+
+impl Mul<Transformation> for Transformation {
+    type Output = Transformation;
+    fn mul(self, rhs: Transformation) -> Self::Output {
+        let data = (self.init() * rhs.init()).get_data();
+        Self { data }
     }
 }
 
@@ -214,75 +223,75 @@ mod test {
     }
 
     #[test]
-    fn xy_shearing(){
+    fn xy_shearing() {
         let transform = Transformation::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0).init();
-        let p = Point::new(2.0,3.0,4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform*p, Point::new(5.0,3.0,4.0));
+        assert_eq!(transform * p, Point::new(5.0, 3.0, 4.0));
     }
 
     #[test]
-    fn xz_shearing(){
+    fn xz_shearing() {
         let transform = Transformation::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0).init();
-        let p = Point::new(2.0,3.0,4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform*p, Point::new(6.0,3.0,4.0));
+        assert_eq!(transform * p, Point::new(6.0, 3.0, 4.0));
     }
 
     #[test]
-    fn yx_shearing(){
+    fn yx_shearing() {
         let transform = Transformation::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0).init();
-        let p = Point::new(2.0,3.0,4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform*p, Point::new(2.0,5.0,4.0));
+        assert_eq!(transform * p, Point::new(2.0, 5.0, 4.0));
     }
 
     #[test]
-    fn yz_shearing(){
+    fn yz_shearing() {
         let transform = Transformation::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0).init();
-        let p = Point::new(2.0,3.0,4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform*p, Point::new(2.0,7.0,4.0));
+        assert_eq!(transform * p, Point::new(2.0, 7.0, 4.0));
     }
 
     #[test]
-    fn zx_shearing(){
+    fn zx_shearing() {
         let transform = Transformation::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0).init();
-        let p = Point::new(2.0,3.0,4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform*p, Point::new(2.0,3.0,6.0));
+        assert_eq!(transform * p, Point::new(2.0, 3.0, 6.0));
     }
 
     #[test]
-    fn zy_shearing(){
+    fn zy_shearing() {
         let transform = Transformation::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0).init();
-        let p = Point::new(2.0,3.0,4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform*p, Point::new(2.0,3.0,7.0));
+        assert_eq!(transform * p, Point::new(2.0, 3.0, 7.0));
     }
 
     #[test]
-    fn seq_transform(){
-        let p = Point::new(1.0,0.0,1.0);
-        let a = Transformation::rotate_x(PI/2.0).init();
+    fn seq_transform() {
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = Transformation::rotate_x(PI / 2.0).init();
         let b = Transformation::scaling(5.0, 5.0, 5.0).init();
         let c = Transformation::translation(10.0, 5.0, 7.0).init();
-        let p2 = a*p;
-        let p3 = b*p2;
-        let p4 = c*p3;
+        let p2 = a * p;
+        let p3 = b * p2;
+        let p4 = c * p3;
 
-        assert_eq!(p2, Point::new(1.0,-1.0,0.0));
-        assert_eq!(p3, Point::new(5.0,-5.0,0.0));
-        assert_eq!(p4, Point::new(15.0,0.0,7.0));
+        assert_eq!(p2, Point::new(1.0, -1.0, 0.0));
+        assert_eq!(p3, Point::new(5.0, -5.0, 0.0));
+        assert_eq!(p4, Point::new(15.0, 0.0, 7.0));
     }
 
     #[test]
-    fn chain_transform(){
-        let p = Point::new(1.0,0.0,1.0);
-        let a = Transformation::rotate_x(PI/2.0).init();
+    fn chain_transform() {
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = Transformation::rotate_x(PI / 2.0).init();
         let b = Transformation::scaling(5.0, 5.0, 5.0).init();
         let c = Transformation::translation(10.0, 5.0, 7.0).init();
 
-        assert_eq!(c*b*a*p, Point::new(15.0,0.0,7.0));
+        assert_eq!(c * b * a * p, Point::new(15.0, 0.0, 7.0));
     }
 }
