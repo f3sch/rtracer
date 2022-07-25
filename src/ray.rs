@@ -62,7 +62,7 @@ mod test {
     #[test]
     fn translate_ray() {
         let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0));
-        let m = Transformation::translation(3.0, 4.0, 5.0).init();
+        let m = Transformation::new().translation(3.0, 4.0, 5.0).init();
         let r2 = r.transform(m);
 
         assert_eq!(r2.origin, Point::new(4.0, 6.0, 8.0));
@@ -72,7 +72,7 @@ mod test {
     #[test]
     fn scale_ray() {
         let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0));
-        let m = Transformation::scaling(2.0, 3.0, 4.0).init();
+        let m = Transformation::new().scaling(2.0, 3.0, 4.0).init();
         let r2 = r.transform(m);
 
         assert_eq!(r2.origin, Point::new(2.0, 6.0, 12.0));

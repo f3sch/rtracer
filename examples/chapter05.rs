@@ -6,26 +6,26 @@ fn main() {
     draw_shape(&shape, "ch05_circle.ppm");
 
     // shrink it along the y axis
-    let t = Transformation::scaling(1.0, 0.5, 1.0);
+    let t = Transformation::new().scaling(1.0, 0.5, 1.0);
     shape.set_transform(t);
     draw_shape(&shape, "ch05_shrink_y.ppm");
 
     // shrink it along the x axis
-    let t = Transformation::scaling(0.5, 1.0, 1.0);
+    let t = Transformation::new().scaling(0.5, 1.0, 1.0);
     shape.set_transform(t);
     draw_shape(&shape, "ch05_shrink_x.ppm");
 
     // shrink it and rotate it!
-    let t1 = Transformation::scaling(0.5, 1.0, 1.0);
-    let t2 = Transformation::rotate_z(PI / 4.0);
-    let t = t1 * t2;
+    let t = Transformation::new()
+        .scaling(0.5, 1.0, 1.0)
+        .rotate_z(PI / 4.0);
     shape.set_transform(t);
     draw_shape(&shape, "ch05_shrink_rotate.ppm");
 
     // shrink it and skew it!
-    let t1 = Transformation::scaling(0.5, 1.0, 1.0);
-    let t2 = Transformation::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    let t = t1 * t2;
+    let t = Transformation::new()
+        .scaling(0.5, 1.0, 1.0)
+        .shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     shape.set_transform(t);
     draw_shape(&shape, "ch05_shrink_skew.ppm");
 }
