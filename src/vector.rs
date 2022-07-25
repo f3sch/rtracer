@@ -19,11 +19,11 @@ impl Vector {
     }
 
     /// Calculate the Length/Magnitude of a Vector.
-    pub fn magnitude(self) -> f64 {
+    pub fn magnitude(&self) -> f64 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
-    pub fn normalize(self) -> Self {
+    pub fn normalize(&self) -> Self {
         let mag = self.magnitude();
         Self {
             x: self.x / mag,
@@ -33,17 +33,22 @@ impl Vector {
     }
 
     /// Calculate the dot product of two Vectors
-    pub fn dot(self, other: Self) -> f64 {
+    pub fn dot(&self, other: Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
     /// Calculate the cross product of two Vectors
-    pub fn cross(self, other: Self) -> Self {
+    pub fn cross(&self, other: Self) -> Self {
         Self {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
         }
+    }
+
+    /// Calculate the reflection of the vector given a normal
+    pub fn reflect(self, normal: Self) -> Self {
+        self - normal * 2.0 * self.dot(normal)
     }
 }
 
@@ -246,5 +251,23 @@ mod test {
 
         assert_eq!(a.cross(b), Vector::new(-1.0, 2.0, -1.0));
         assert_eq!(b.cross(a), Vector::new(1.0, -2.0, 1.0));
+    }
+
+    #[test]
+    fn reflect_45_vector() {
+        let v = Vector::new(1.0, -1.0, 0.0);
+        let n = Vector::new(0.0, 1.0, 0.0);
+        let r = v.reflect(n);
+
+        assert_eq!(r, Vector::new(1.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn reflect_slanted_vector() {
+        let v = Vector::new(0.0, -1.0, 0.0);
+        let n = Vector::new(2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0, 0.0);
+        let r = v.reflect(n);
+
+        assert_eq!(r, Vector::new(1.0, 0.0, 0.0));
     }
 }

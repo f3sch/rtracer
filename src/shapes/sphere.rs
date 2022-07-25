@@ -1,4 +1,4 @@
-use crate::{shapes::Shape, Intersection, Material, Point, Ray, Transformation, Vector};
+use crate::{shapes::Shape, Intersection, Material, Point, Ray, Transformation, Vector, RGB};
 use uuid::Uuid;
 
 /// A sphere.
@@ -23,11 +23,19 @@ impl Sphere {
             material: Material::default(),
         }
     }
+
+    pub fn set_color(&mut self, color: RGB) {
+        self.material.color = color;
+    }
 }
 
 impl Shape for Sphere {
     fn id(&self) -> Uuid {
         self.uuid
+    }
+
+    fn get_material(&self) -> Material {
+        self.material
     }
 
     fn get_transform(&self) -> Transformation {
@@ -287,7 +295,7 @@ mod test {
     fn assign_material_sphere() {
         let mut s = Sphere::new();
         let mut m = s.material;
-        m.ambient =1.0;
+        m.ambient = 1.0;
         s.material = m;
 
         assert_eq!(s.material, m);

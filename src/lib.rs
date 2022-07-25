@@ -44,3 +44,11 @@ pub use crate::shapes::Sphere;
 
 mod intersection;
 pub use crate::intersection::Intersection;
+
+mod light;
+pub use crate::light::Light;
+pub use crate::light::PointLight;
+
+mod material;
+pub use crate::material::Material;
+pub use crate::material::lightning;
