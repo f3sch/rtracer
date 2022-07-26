@@ -15,6 +15,9 @@ pub trait Shape: Debug {
     /// Return the material of a shape
     fn get_material(&self) -> Material;
 
+    /// Set the material of a shape
+    fn set_material(&mut self, m: Material);
+
     /// Every shape has an internal transformation matrix
     fn get_transform(&self) -> Transformation;
 

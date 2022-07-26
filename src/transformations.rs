@@ -120,6 +120,12 @@ impl Mul<Transformation> for Transformation {
     }
 }
 
+impl PartialEq for Transformation{
+    fn eq(&self, other: &Self) -> bool {
+        self.data == other.data
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
