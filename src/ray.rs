@@ -31,6 +31,11 @@ impl Ray {
             direction: m * self.direction,
         }
     }
+
+    /// Get the direction of the Ray.
+    pub fn direction(&self) -> Vector {
+        self.direction
+    }
 }
 
 #[cfg(test)]

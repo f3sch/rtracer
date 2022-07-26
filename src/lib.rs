@@ -2,10 +2,12 @@ use std::cmp::Ordering;
 
 pub const EPSILON: f64 = 0.0001;
 
+#[inline(always)]
 pub fn float_eq(a: f64, b: f64) -> bool {
     (a - b).abs() < EPSILON
 }
 
+#[inline(always)]
 pub fn float_cmp(a: f64, b: f64) -> Ordering {
     if float_eq(a, b) {
         Ordering::Equal
@@ -55,3 +57,6 @@ pub use crate::material::lightning;
 
 mod world;
 pub use crate::world::World;
+
+mod computations;
+pub use crate::computations::Computation;
