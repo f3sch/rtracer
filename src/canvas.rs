@@ -105,7 +105,7 @@ mod test {
     }
 
     #[test]
-    fn ppm_line_limit_canvas(){
+    fn ppm_line_limit_canvas() {
         let mut c = Canvas::new(10, 2);
 
         for y in 0..c.height {

@@ -109,7 +109,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_some(), true);
+        assert!(xs.is_some());
         let xs = xs.unwrap();
 
         assert_eq!(xs.len(), 2);
@@ -122,7 +122,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_some(), true);
+        assert!(xs.is_some());
         let xs = xs.unwrap();
 
         assert_eq!(xs.len(), 2);
@@ -135,7 +135,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_none(), true);
+        assert!(xs.is_none());
     }
 
     #[test]
@@ -143,7 +143,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_some(), true);
+        assert!(xs.is_some());
         let xs = xs.unwrap();
 
         assert_eq!(xs.len(), 2);
@@ -156,7 +156,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_some(), true);
+        assert!(xs.is_some());
         let xs = xs.unwrap();
 
         assert_eq!(xs.len(), 2);
@@ -169,12 +169,12 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::new();
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_some(), true);
+        assert!(xs.is_some());
         let xs = xs.unwrap();
 
         assert_eq!(xs.len(), 2);
-        assert_eq!(xs[0].object.eq(&s), true);
-        assert_eq!(xs[1].object.eq(&s), true);
+        assert!(xs[0].object.eq(&s));
+        assert!(xs[1].object.eq(&s));
     }
 
     #[test]
@@ -199,7 +199,7 @@ mod test {
         let mut s = Sphere::new();
         s.set_transform(Transformation::new().scaling(2.0, 2.0, 2.0));
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_some(), true);
+        assert!(xs.is_some());
         let xs = xs.unwrap();
 
         assert_eq!(xs.len(), 2);
@@ -213,7 +213,7 @@ mod test {
         let mut s = Sphere::new();
         s.set_transform(Transformation::new().translation(5.0, 0.0, 0.0));
         let xs = s.intersect(&r);
-        assert_eq!(xs.is_none(), true);
+        assert!(xs.is_none());
     }
 
     #[test]

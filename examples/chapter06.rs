@@ -1,15 +1,17 @@
-use rtracer::{PointLight,lightning, shapes::Sphere, Canvas, Point, Ray, Shape, Transformation, RGB, Light};
+use rtracer::{
+    lightning, shapes::Sphere, Canvas, Light, Point, PointLight, Ray, Shape, Transformation, RGB,
+};
 use std::{f64::consts::PI, fs::File, io::Write, path::Path};
 
 fn main() {
     // build world
     let mut shape = Sphere::new();
-    shape.set_color(RGB::new(1.0,0.2,1.0));
-    let light_position = Point::new(-10.0,10.0,-10.0);
-    let light_color=RGB::new(1.0,1.0,1.0);
-        let light = PointLight::new(light_position,light_color);
+    shape.set_color(RGB::new(1.0, 0.2, 1.0));
+    let light_position = Point::new(-10.0, 10.0, -10.0);
+    let light_color = RGB::new(1.0, 1.0, 1.0);
+    let light = PointLight::new(light_position, light_color);
 
-        // draw basic
+    // draw basic
     draw_shape(&shape, &light, "ch06_circle.ppm");
 
     // shrink it along the y axis
@@ -37,7 +39,7 @@ fn main() {
     draw_shape(&shape, &light, "ch06_shrink_skew.ppm");
 }
 
-fn draw_shape(shape: &dyn Shape, light: &dyn Light,file_name: &str) {
+fn draw_shape(shape: &dyn Shape, light: &dyn Light, file_name: &str) {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
     let wall_z = 10.0;
 

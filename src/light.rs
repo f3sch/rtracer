@@ -42,7 +42,7 @@ impl Light for PointLight {
     }
 }
 
-impl PartialEq for PointLight{
+impl PartialEq for PointLight {
     fn eq(&self, other: &Self) -> bool {
         self.intensity == other.intensity && self.position == other.position
     }

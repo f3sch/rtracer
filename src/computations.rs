@@ -1,7 +1,7 @@
-use crate::{Point, Vector, shapes::Shape};
+use crate::{shapes::Shape, Point, Vector};
 
 /// A Computation encapsulates some pre-compute information of an intersection and an object.
-pub struct Computation<'a>{
+pub struct Computation<'a> {
     /// Distance from the origin of a Ray to the intersection.
     pub t: f64,
 

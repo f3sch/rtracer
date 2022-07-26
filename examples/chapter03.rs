@@ -1,7 +1,7 @@
-use rtracer::{Matrix,Point,IDENTITY};
+use rtracer::{Matrix, Point, IDENTITY};
 
 fn main() {
-let i = IDENTITY;
+    let i = IDENTITY;
     println!("What happens when you invert the identity matrix?");
     println!();
     println!("Identity Matrix:");
@@ -9,14 +9,14 @@ let i = IDENTITY;
 
     println!("Inverted Identity Matrix:");
     println!("{}", i.inverse(4).unwrap());
-  println!("--------------------------------------------------------------");
+    println!("--------------------------------------------------------------");
     println!("What do you get when you multiply a matrix by its inverse?");
     println!();
     let a = Matrix::new([
-        [ 3.0, -9.0,  7.0,  3.0],
-        [ 3.0, -8.0,  2.0, -9.0],
-        [-4.0,  4.0,  4.0,  1.0],
-        [-6.0,  5.0, -1.0,  1.0],
+        [3.0, -9.0, 7.0, 3.0],
+        [3.0, -8.0, 2.0, -9.0],
+        [-4.0, 4.0, 4.0, 1.0],
+        [-6.0, 5.0, -1.0, 1.0],
     ]);
 
     println!("Matrix A:");

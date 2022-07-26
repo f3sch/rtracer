@@ -101,7 +101,7 @@ impl Matrix {
     }
 
     /// Return raw data
-    pub fn get_data(&self) -> [[f64;4];4]{
+    pub fn get_data(&self) -> [[f64; 4]; 4] {
         self.data
     }
 }
@@ -506,7 +506,7 @@ mod test {
         ]);
 
         assert_eq!(a.determinant(4), -2120.0);
-        assert_eq!(a.is_invertible(4), true);
+        assert!(a.is_invertible(4));
     }
 
     #[test]
@@ -519,7 +519,7 @@ mod test {
         ]);
 
         assert_eq!(a.determinant(4), 0.0);
-        assert_eq!(a.is_invertible(4), false);
+        assert!(!a.is_invertible(4));
     }
 
     #[test]

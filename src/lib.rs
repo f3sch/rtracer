@@ -52,8 +52,8 @@ pub use crate::light::Light;
 pub use crate::light::PointLight;
 
 mod material;
-pub use crate::material::Material;
 pub use crate::material::lightning;
+pub use crate::material::Material;
 
 mod world;
 pub use crate::world::World;

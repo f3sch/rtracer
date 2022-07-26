@@ -81,7 +81,7 @@ mod test {
         let i = Intersection::new(3.5, &s);
 
         assert_eq!(i.t, 3.5);
-        assert_eq!(i.object.eq(&s), true);
+        assert!(i.object.eq(&s));
     }
 
     #[test]
@@ -125,7 +125,7 @@ mod test {
         let i2 = Intersection::new(-1.0, &s);
         let xs = vec![i2, i1];
 
-        assert_eq!(hit(xs).is_none(), true);
+        assert!(hit(xs).is_none());
     }
 
     #[test]

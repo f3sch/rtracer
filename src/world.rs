@@ -37,7 +37,7 @@ impl World {
         if xs.len() == 0 {
             None
         } else {
-            xs.sort_by(|a,b| a.partial_cmp(b).unwrap());
+            xs.sort_by(|a, b| a.partial_cmp(b).unwrap());
             Some(xs)
         }
     }
@@ -76,8 +76,8 @@ mod test {
     fn create_world() {
         let w = World::new();
 
-        assert_eq!(w.objects.is_empty(), true);
-        assert_eq!(w.light.is_none(), true);
+        assert!(w.objects.is_empty());
+        assert!(w.light.is_none());
     }
 
     #[test]
@@ -117,11 +117,11 @@ mod test {
     }
 
     #[test]
-    fn intersect_world_ray_world(){
+    fn intersect_world_ray_world() {
         let w = World::default();
-        let r = Ray::new(Point::new(0.0,0.0,-5.0),Vector::new(0.0,0.0,1.0));
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let xs = w.intersect_world(&r);
-        assert_eq!(xs.is_some(), true);
+        assert!(xs.is_some());
         let xs = xs.unwrap();
 
         assert_eq!(xs.len(), 4);
