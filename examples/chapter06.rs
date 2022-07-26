@@ -1,5 +1,5 @@
 use rtracer::{
-    lightning, shapes::Sphere, Canvas, Light, Point, PointLight, Ray, Shape, Transformation, RGB,
+    lightning, shapes::Sphere, Canvas, Point, PointLight, Ray, Shape, Transformation, RGB,
 };
 use std::{f64::consts::PI, fs::File, io::Write, path::Path};
 
@@ -39,7 +39,7 @@ fn main() {
     draw_shape(&shape, &light, "ch06_shrink_skew.ppm");
 }
 
-fn draw_shape(shape: &dyn Shape, light: &dyn Light, file_name: &str) {
+fn draw_shape(shape: &dyn Shape, light: &PointLight, file_name: &str) {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
     let wall_z = 10.0;
 
@@ -51,7 +51,6 @@ fn draw_shape(shape: &dyn Shape, light: &dyn Light, file_name: &str) {
     let half = wall_size / 2.0;
 
     let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
-    let color = RGB::new(1.0, 0.0, 0.0);
 
     for y in 0..canvas_pixels {
         let world_y = half - pixel_size * y as f64;

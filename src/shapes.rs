@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use uuid::Uuid;
 
 /// Common trait among all shapes.
-pub trait Shape: Debug {
+pub trait Shape: 'static + Debug {
     /// Every shape has a unique id in the world.
     fn id(&self) -> Uuid;
 
@@ -14,6 +14,9 @@ pub trait Shape: Debug {
 
     /// Return the material of a shape
     fn get_material(&self) -> Material;
+
+    /// Return the material of a shape
+    fn get_material_mut(&mut self) -> &mut Material;
 
     /// Set the material of a shape
     fn set_material(&mut self, m: Material);

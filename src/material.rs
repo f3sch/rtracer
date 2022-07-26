@@ -1,6 +1,5 @@
+use crate::{PointLight, Point, Vector, RGB};
 use std::ops::Neg;
-
-use crate::{light::Light, Point, Vector, RGB};
 
 /// A Material encapsulates all the properties of the surface.
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -36,7 +35,7 @@ impl Default for Material {
 /// Calculate the lightning of shape from a Light source.
 pub fn lightning(
     material: &Material,
-    light: &dyn Light,
+    light: &PointLight,
     position: &Point,
     eyev: &Vector,
     normalv: &Vector,
@@ -50,14 +49,14 @@ pub fn lightning(
     // compute the ambient contribution
     let ambient = effective_color * material.ambient;
     // light_dot normal represent the cosine of the angle between the
-    // light vector and the nomral vector.
+    // light vector and the normal vector.
     // A negative number means the light is on the other side of the surface.
     let light_dot_normal = lightv.dot(*normalv);
     if light_dot_normal <= 0.0 {
         diffuse = RGB::new(0.0, 0.0, 0.0);
         specular = RGB::new(0.0, 0.0, 0.0);
     } else {
-        // compute the diffuse contribtuin
+        // compute the diffuse contribution
         diffuse = effective_color * material.diffuse * light_dot_normal;
         // reflect_dot_eye represents the cosine of the angle between the
         // reflection vector and the eye vector.

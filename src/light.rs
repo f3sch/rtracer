@@ -1,19 +1,10 @@
 use crate::{Point, RGB};
 use std::fmt::Debug;
 
-/// General light trait.
-pub trait Light: Debug {
-    /// Get the intensity of the light.
-    fn get_intensity(&self) -> RGB;
-
-    /// Get the position of the light.
-    fn get_position(&self) -> Point;
-}
-
 /// A PointLight is light with no size, exisiting at a single
 /// point in space.
 /// It is also defined by its intensity.
-#[derive(Debug)]
+#[derive(Debug,Clone, Copy)]
 pub struct PointLight {
     /// Essentially the same as brightness.
     intensity: RGB,
@@ -30,14 +21,12 @@ impl PointLight {
             position,
         }
     }
-}
 
-impl Light for PointLight {
-    fn get_intensity(&self) -> RGB {
+    pub fn get_intensity(&self) -> RGB {
         self.intensity
     }
 
-    fn get_position(&self) -> Point {
+    pub fn get_position(self) -> Point {
         self.position
     }
 }

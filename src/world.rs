@@ -6,7 +6,7 @@ pub struct World {
     objects: Vec<Box<dyn Shape>>,
 
     /// The light source.
-    light: Option<Box<dyn Light>>,
+    light: Option<PointLight>,
 }
 
 impl World {
@@ -21,6 +21,22 @@ impl World {
     /// Add objects/shapes to a world.
     pub fn add_object(&mut self, object: Box<dyn Shape>) {
         self.objects.push(object);
+    }
+
+    /// Return a reference to an object inside the world identified by the index.
+    pub fn get_object(&self, index: usize) -> Option<&dyn Shape> {
+        match self.objects.get(index) {
+            Some(obj) => Some(obj.as_ref()),
+            None => None,
+        }
+    }
+
+    /// Return a mut reference to an object inside the world identified by the index.
+    pub fn get_object_mut(&mut self, index: usize) -> Option<&mut dyn Shape> {
+        match self.objects.get_mut(index) {
+            Some(obj) => Some(obj.as_mut()),
+            None => None,
+        }
     }
 
     /// Calculate the intersection of a ray in this world.
@@ -41,16 +57,41 @@ impl World {
             Some(xs)
         }
     }
+
+    /// Compute the color at the intersection.
+    pub fn shade_hit(&self, comps: &Computation) -> RGB {
+        lightning(
+            &comps.object.get_material(),
+            &self.light.expect("World has no light!"),
+            &comps.point,
+            &comps.eyev,
+            &comps.normalv,
+        )
+    }
+
+    ///
+    pub fn color_at(&self, ray: &Ray) -> RGB {
+        match self.intersect_world(ray) {
+            Some(xs) => match hit(xs) {
+                Some(i) => {
+                    let comps = i.prepare_computations(&ray);
+                    self.shade_hit(&comps)
+                }
+                None => BLACK,
+            },
+            None => BLACK,
+        }
+    }
 }
 
 impl Default for World {
     fn default() -> Self {
         let mut w = World::new();
 
-        w.light = Some(Box::new(PointLight::new(
+        w.light = Some(PointLight::new(
             Point::new(-10.0, 10.0, -10.0),
             RGB::new(1.0, 1.0, 1.0),
-        )));
+        ));
         let mut s1 = Sphere::new();
         let mut m1 = Material::default();
         m1.color = RGB::new(0.8, 1.0, 0.6);
@@ -129,5 +170,77 @@ mod test {
         assert_eq!(xs[1].t, 4.5);
         assert_eq!(xs[2].t, 5.5);
         assert_eq!(xs[3].t, 6.0);
+    }
+
+    #[test]
+    fn shading_outside_intersection() {
+        let w = World::default();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let shape = w
+            .get_object(0)
+            .expect("Default world should have two shapes!");
+        let i = Intersection::new(4.0, shape);
+        let comps = i.prepare_computations(&r);
+        let c = w.shade_hit(&comps);
+
+        assert_eq!(c, RGB::new(0.38066, 0.47583, 0.2855));
+    }
+
+    #[test]
+    fn shading_inside_intersection() {
+        let mut w = World::default();
+        w.light = Some(PointLight::new(
+            Point::new(0.0, 0.25, 0.0),
+            RGB::new(1.0, 1.0, 1.0),
+        ));
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+        let shape = w
+            .get_object(1)
+            .expect("Default world should have two shapes!");
+        let i = Intersection::new(0.5, shape);
+        let comps = i.prepare_computations(&r);
+        let c = w.shade_hit(&comps);
+
+        assert_eq!(c, RGB::new(0.90498, 0.90498, 0.90498));
+    }
+
+    #[test]
+    fn color_miss_world() {
+        let w = World::default();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
+        let c = w.color_at(&r);
+
+        assert_eq!(c, BLACK);
+    }
+
+    #[test]
+    fn color_hit_world() {
+        let w = World::default();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let c = w.color_at(&r);
+
+        assert_eq!(c, RGB::new(0.38066, 0.47583, 0.2855));
+    }
+
+    #[test]
+    fn color_behind_intersection_world() {
+        let mut w = World::default();
+        {
+            let outer = w
+                .get_object_mut(0)
+                .expect("First object must exists in default world!");
+            outer.get_material_mut().ambient = 1.0;
+            let inner = w
+                .get_object_mut(1)
+                .expect("First object must exists in default world!");
+            inner.get_material_mut().ambient = 1.0;
+        }
+        let inner = w
+            .get_object(1)
+            .expect("First object must exists in default world!");
+        let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
+        let c = w.color_at(&r);
+
+        assert_eq!(c, inner.get_material().color);
     }
 }

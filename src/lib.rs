@@ -26,6 +26,7 @@ pub use crate::vector::Vector;
 
 mod color;
 pub use crate::color::RGB;
+pub use crate::color::BLACK;
 
 mod canvas;
 pub use crate::canvas::Canvas;
@@ -46,9 +47,9 @@ pub use crate::shapes::Sphere;
 
 mod intersection;
 pub use crate::intersection::Intersection;
+pub use crate::intersection::hit;
 
 mod light;
-pub use crate::light::Light;
 pub use crate::light::PointLight;
 
 mod material;

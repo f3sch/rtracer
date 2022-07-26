@@ -89,6 +89,12 @@ impl PartialEq for RGB {
     }
 }
 
+pub const BLACK: RGB = RGB {
+    red: 0.0,
+    green: 0.0,
+    blue: 0.0,
+};
+
 #[cfg(test)]
 mod test {
     use super::*;
