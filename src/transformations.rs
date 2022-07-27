@@ -110,6 +110,24 @@ impl Transformation {
 
         shear * self
     }
+
+    /// Create a Transformation that orients the world relative to the camera.
+    pub fn view_transformation(from: Point, to: Point, up: Vector) -> Self {
+        let forward = (to - from).normalize();
+        let left = forward.cross(up.normalize());
+        let true_up = left.cross(forward);
+        let orientation = Transformation {
+            data: [
+                [left.x, left.y, left.z, 0.0],
+                [true_up.x, true_up.y, true_up.z, 0.0],
+                [-forward.x, -forward.y, -forward.z, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        let translation = Transformation::new().translation(-from.x, -from.y, -from.z);
+
+        orientation * translation
+    }
 }
 
 impl Mul<Transformation> for Transformation {
@@ -122,7 +140,14 @@ impl Mul<Transformation> for Transformation {
 
 impl PartialEq for Transformation {
     fn eq(&self, other: &Self) -> bool {
-        self.data == other.data
+        for r in 0..4{
+            for c in 0..4{
+                if !float_eq(self.data[r][c],other.data[r][c]){
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
 
@@ -335,5 +360,53 @@ mod test {
             .init();
 
         assert_eq!(a * p, Point::new(15.0, 0.0, 7.0));
+    }
+
+    #[test]
+    fn default_view_transform() {
+        let from = Point::new(0.0, 0.0, 0.0);
+        let to = Point::new(0.0, 0.0, -1.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+        let t = Transformation::view_transformation(from, to, up).init();
+
+        assert_eq!(t, IDENTITY);
+    }
+
+    #[test]
+    fn pos_z_view_transform() {
+        let from = Point::new(0.0, 0.0, 0.0);
+        let to = Point::new(0.0, 0.0, 1.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+        let t = Transformation::view_transformation(from, to, up);
+
+        assert_eq!(t, Transformation::new().scaling(-1.0, 1.0, -1.0));
+    }
+
+    #[test]
+    fn move_world_view_transform() {
+        let from = Point::new(0.0, 0.0, 8.0);
+        let to = Point::new(0.0, 0.0, 0.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+        let t = Transformation::view_transformation(from, to, up);
+
+        assert_eq!(t, Transformation::new().translation(0.0, 0.0, -8.0));
+    }
+
+    #[test]
+    fn arbitrary_view_transform() {
+        let from = Point::new(1.0, 3.0, 2.0);
+        let to = Point::new(4.0, -2.0, 8.0);
+        let up = Vector::new(1.0, 1.0, 0.0);
+        let t = Transformation::view_transformation(from, to, up);
+        let res = Transformation {
+            data: [
+                [-0.50709, 0.50709, 0.67612, -2.36643],
+                [0.76772, 0.60609, 0.12122, -2.82843],
+                [-0.35857, 0.59761, -0.71714, 0.00000],
+                [0.00000, 0.00000, 0.00000, 1.00000],
+            ],
+        };
+
+        assert_eq!(t, res);
     }
 }
