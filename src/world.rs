@@ -18,6 +18,11 @@ impl World {
         }
     }
 
+    /// Set the light source of the world.
+    pub fn set_light(&mut self, light:PointLight){
+        self.light = Some(light);
+    }
+
     /// Add objects/shapes to a world.
     pub fn add_object(&mut self, object: Box<dyn Shape>) {
         self.objects.push(object);
