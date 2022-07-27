@@ -53,6 +53,11 @@ impl Canvas {
 
         ppm
     }
+
+    /// Return the color at the given pixel.
+    pub fn pixel_at(&self, x: usize, y: usize) -> RGB {
+        self.pixels[y][x]
+    }
 }
 
 #[cfg(test)]
