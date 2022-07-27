@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-pub const EPSILON: f64 = 0.0001;
+pub const EPSILON: f64 = 0.01;
 
 #[inline(always)]
 pub fn float_eq(a: f64, b: f64) -> bool {
@@ -61,3 +61,6 @@ pub use crate::world::World;
 
 mod computations;
 pub use crate::computations::Computation;
+
+mod camera;
+pub use crate::camera::Camera;
