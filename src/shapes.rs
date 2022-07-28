@@ -33,7 +33,13 @@ pub trait Shape: 'static + Debug {
     fn intersect(&self, ray: &Ray) -> Option<Vec<Intersection>>;
 
     /// Compute a normal at a given point for a shape.
-    fn normal_at(&self, world_point: Point) -> Vector;
+    fn normal_at(&self, world_point: Point) -> Vector {
+        let inv = self.get_transform().init().inverse(4).unwrap();
+        let object_point = inv * world_point;
+        let object_normal = object_point - Point::new(0.0, 0.0, 0.0);
+        let world_normal = inv.transpose() * object_normal;
+        world_normal.normalize()
+    }
 }
 
 impl PartialEq for dyn Shape {

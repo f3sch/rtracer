@@ -77,14 +77,6 @@ impl Shape for Sphere {
             Intersection::new(t2, self),
         ])
     }
-
-    fn normal_at(&self, world_point: Point) -> Vector {
-        let inv = self.transform.init().inverse(4).unwrap();
-        let object_point = inv * world_point;
-        let object_normal = object_point - Point::new(0.0, 0.0, 0.0);
-        let world_normal = inv.transpose() * object_normal;
-        world_normal.normalize()
-    }
 }
 
 impl PartialEq for Sphere {
