@@ -1,6 +1,4 @@
-use rtracer::{
-    lightning, shapes::Sphere, Canvas, Point, PointLight, Ray, Shape, Transformation, RGB,
-};
+use rtracer::{shapes::Sphere, Canvas, Point, PointLight, Ray, Shape, Transformation, RGB, WHITE};
 use std::{f64::consts::PI, fs::File, io::Write, path::Path};
 
 fn main() {
@@ -8,7 +6,7 @@ fn main() {
     let mut shape = Sphere::new();
     shape.set_color(RGB::new(1.0, 0.2, 1.0));
     let light_position = Point::new(-10.0, 10.0, -10.0);
-    let light_color = RGB::new(1.0, 1.0, 1.0);
+    let light_color = WHITE;
     let light = PointLight::new(light_position, light_color);
 
     // draw basic

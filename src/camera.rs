@@ -1,4 +1,4 @@
-use crate::{Canvas, Point, Ray, Transformation, Vector, World};
+use crate::{Canvas, Point, Ray, Transformation, World};
 
 /// Just like a real camera, the virtual camera allows moving around in the scene.
 pub struct Camera {
@@ -157,7 +157,7 @@ mod test {
     }
 
     #[test]
-    fn render_camer() {
+    fn render_camera() {
         let w = World::default();
         let mut c = Camera::new(11, 11, PI / 2.0);
         let from = Point::new(0.0, 0.0, -5.0);

@@ -95,6 +95,30 @@ pub const BLACK: RGB = RGB {
     blue: 0.0,
 };
 
+pub const WHITE: RGB = RGB {
+    red: 1.0,
+    green: 1.0,
+    blue: 1.0,
+};
+
+pub const RED: RGB = RGB {
+    red: 1.0,
+    green: 0.0,
+    blue: 0.0,
+};
+
+pub const GREEN: RGB = RGB {
+    red: 0.0,
+    green: 1.0,
+    blue: 0.0,
+};
+
+pub const BLUE: RGB = RGB {
+    red: 0.0,
+    green: 0.0,
+    blue: 1.0,
+};
+
 #[cfg(test)]
 mod test {
     use super::*;

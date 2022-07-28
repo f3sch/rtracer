@@ -39,11 +39,13 @@ impl PartialEq for PointLight {
 
 #[cfg(test)]
 mod test {
+    use crate::WHITE;
+
     use super::*;
 
     #[test]
     fn create_point_light() {
-        let intensity = RGB::new(1.0, 1.0, 1.0);
+        let intensity = WHITE;
         let position = Point::new(0.0, 0.0, 0.0);
         let light = PointLight::new(position, intensity);
 

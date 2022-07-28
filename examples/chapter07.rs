@@ -11,7 +11,7 @@ fn main() {
     m.color = RGB::new(1.0, 0.9, 0.9);
     m.specular = 0.0;
     floor.set_material(m);
-    world.add_object(Box::new(floor));
+    add_object!(world,floor);
 
     let mut left_wall = Sphere::new();
     left_wall.set_transform(
@@ -22,7 +22,7 @@ fn main() {
             .translation(0.0, 0.0, 5.0),
     );
     left_wall.set_material(m);
-    world.add_object(Box::new(left_wall));
+    add_object!(world,left_wall);
 
     let mut right_wall = Sphere::new();
     right_wall.set_transform(
@@ -33,7 +33,7 @@ fn main() {
             .translation(0.0, 0.0, 5.0),
     );
     right_wall.set_material(m);
-    world.add_object(Box::new(right_wall));
+    add_object!(world,right_wall);
 
     let mut middle = Sphere::new();
     middle.set_transform(Transformation::new().translation(-0.5, 1.0, 0.5));
@@ -42,7 +42,7 @@ fn main() {
     m.diffuse = 0.7;
     m.specular = 0.3;
     middle.set_material(m);
-    world.add_object(Box::new(middle));
+    add_object!(world,middle);
 
     let mut right = Sphere::new();
     right.set_transform(
@@ -55,7 +55,7 @@ fn main() {
     m.diffuse = 0.7;
     m.specular = 0.3;
     right.set_material(m);
-    world.add_object(Box::new(right));
+    add_object!(world,right);
 
     let mut left = Sphere::new();
     left.set_transform(
@@ -68,7 +68,7 @@ fn main() {
     m.diffuse = 0.7;
     m.specular = 0.3;
     left.set_material(m);
-    world.add_object(Box::new(left));
+    add_object!(world,left);
 
     world.set_light(PointLight::new(
         Point::new(-10.0, 10.0, -10.0),

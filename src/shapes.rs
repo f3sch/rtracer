@@ -7,7 +7,7 @@ pub trait Shape: 'static + Debug {
     /// Every shape has a unique id in the world.
     fn id(&self) -> Uuid;
 
-    /// check for equaltiy
+    /// check for equality
     fn eq(&self, other: &dyn Shape) -> bool {
         self.id() == other.id()
     }

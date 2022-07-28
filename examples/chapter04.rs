@@ -3,13 +3,13 @@ use std::{f64::consts::PI, fs::File, io::Write, path::Path};
 
 fn main() {
     let canvas = &mut Canvas::new(200, 200);
-    canvas.write_pixel(100, 100, RGB::new(1.0, 0.0, 0.0));
+    canvas.write_pixel(100, 100, RED);
 
     let mut hour = 1.0;
     loop {
         let xy = clock_hour(hour);
 
-        canvas.write_pixel(xy.0, xy.1, RGB::new(1.0, 0.0, 0.0));
+        canvas.write_pixel(xy.0, xy.1, RED);
         hour += 1.0;
 
         if hour > 12.0 {

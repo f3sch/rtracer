@@ -46,7 +46,7 @@ fn main() {
         let x = p.position.x as usize;
         let y = height - p.position.y as usize;
         if x <= width - 1 && y <= height - 1 {
-            c.write_pixel(x, y, RGB::new(1.0, 0.0, 0.0));
+            c.write_pixel(x, y, RED);
         }
     }
 

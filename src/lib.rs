@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-pub const EPSILON: f64 = 0.01;
+pub const EPSILON: f64 = 0.0001;
 
 #[inline(always)]
 pub fn float_eq(a: f64, b: f64) -> bool {
@@ -18,6 +18,13 @@ pub fn float_cmp(a: f64, b: f64) -> Ordering {
     }
 }
 
+#[macro_export]
+macro_rules! add_object {
+    ($w:expr, $obj:expr) => {
+        $w.add_object(Box::new($obj))
+    };
+}
+
 mod point;
 pub use crate::point::Point;
 
@@ -26,7 +33,7 @@ pub use crate::vector::Vector;
 
 mod color;
 pub use crate::color::RGB;
-pub use crate::color::BLACK;
+pub use crate::color::{BLACK, BLUE, GREEN, RED, WHITE};
 
 mod canvas;
 pub use crate::canvas::Canvas;

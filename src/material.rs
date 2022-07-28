@@ -1,4 +1,4 @@
-use crate::{PointLight, Point, Vector, RGB};
+use crate::{Point, PointLight, Vector, RGB, WHITE,BLACK};
 use std::ops::Neg;
 
 /// A Material encapsulates all the properties of the surface.
@@ -23,7 +23,7 @@ pub struct Material {
 impl Default for Material {
     fn default() -> Self {
         Self {
-            color: RGB::new(1.0, 1.0, 1.0),
+            color:WHITE,
             ambient: 0.1,
             diffuse: 0.9,
             specular: 0.9,
@@ -87,7 +87,7 @@ mod test {
     fn default_material() {
         let m = Material::default();
 
-        assert_eq!(m.color, RGB::new(1.0, 1.0, 1.0));
+        assert_eq!(m.color, WHITE);
         assert_eq!(m.ambient, 0.1);
         assert_eq!(m.diffuse, 0.9);
         assert_eq!(m.specular, 0.9);

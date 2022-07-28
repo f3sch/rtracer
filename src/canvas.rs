@@ -1,4 +1,4 @@
-use crate::color::RGB;
+use crate::{color::RGB,RED, BLACK};
 
 /// Canvas object
 #[derive(Debug)]
@@ -17,7 +17,7 @@ impl Canvas {
         Self {
             width,
             height,
-            pixels: vec![vec![RGB::new(0.0, 0.0, 0.0); width]; height],
+            pixels: vec![vec![BLACK; width]; height],
         }
     }
 
@@ -72,7 +72,7 @@ mod test {
         assert_eq!(c.height, 20);
         for y in 0..c.height {
             for x in 0..c.width {
-                assert_eq!(c.pixels[y][x], RGB::new(0.0, 0.0, 0.0));
+                assert_eq!(c.pixels[y][x], BLACK);
             }
         }
     }
@@ -80,7 +80,7 @@ mod test {
     #[test]
     fn write_pixel_canvas() {
         let mut c = Canvas::new(10, 20);
-        let red = RGB::new(1.0, 0.0, 0.0);
+        let red = RED;
         c.write_pixel(2, 3, red);
 
         assert_eq!(c.pixels[3][2], red);
@@ -90,7 +90,7 @@ mod test {
     #[should_panic]
     fn write_pixel_fail_canvas() {
         let mut c = Canvas::new(10, 20);
-        let red = RGB::new(1.0, 0.0, 0.0);
+        let red = RED;
         c.write_pixel(19, 1, red);
     }
 

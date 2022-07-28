@@ -1,4 +1,4 @@
-use rtracer::{shapes::Sphere, Canvas, Point, Ray, Shape, Transformation, RGB};
+use rtracer::{shapes::Sphere, Canvas, Point, Ray, Shape, Transformation, RED};
 use std::{f64::consts::PI, fs::File, io::Write, path::Path};
 
 fn main() {
@@ -42,7 +42,7 @@ fn draw_shape(shape: &Sphere, file_name: &str) {
     let half = wall_size / 2.0;
 
     let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
-    let color = RGB::new(1.0, 0.0, 0.0);
+    let color = RED;
 
     for y in 0..canvas_pixels {
         let world_y = half - pixel_size * y as f64;
