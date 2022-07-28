@@ -32,49 +32,52 @@ impl Default for Material {
     }
 }
 
-/// Calculate the lightning of shape from a Light source.
-pub fn lightning(
-    material: &Material,
-    light: &PointLight,
-    position: &Point,
-    eyev: &Vector,
-    normalv: &Vector,
-) -> RGB {
-    // combine the surface color with the light's color/intensity
-    let effective_color = material.color * light.get_intensity();
-    let diffuse;
-    let specular;
-    // find the direction to the light source
-    let lightv = (light.get_position() - *position).normalize();
-    // compute the ambient contribution
-    let ambient = effective_color * material.ambient;
-    // light_dot normal represent the cosine of the angle between the
-    // light vector and the normal vector.
-    // A negative number means the light is on the other side of the surface.
-    let light_dot_normal = lightv.dot(*normalv);
-    if light_dot_normal <= 0.0 {
-        diffuse = RGB::new(0.0, 0.0, 0.0);
-        specular = RGB::new(0.0, 0.0, 0.0);
-    } else {
-        // compute the diffuse contribution
-        diffuse = effective_color * material.diffuse * light_dot_normal;
-        // reflect_dot_eye represents the cosine of the angle between the
-        // reflection vector and the eye vector.
-        // A negative number means the light reflects away from the eye.
-        let reflectv = lightv.neg().reflect(*normalv);
-        let reflect_dot_eye = reflectv.dot(*eyev);
-
-        if reflect_dot_eye <= 0.0 {
-            specular = RGB::new(0.0, 0.0, 0.0);
+impl Material {
+    /// Calculate the lightning of shape from a Light source.
+    pub fn lightning(
+        &self,
+        light: &PointLight,
+        position: &Point,
+        eyev: &Vector,
+        normalv: &Vector,
+        in_shadow: bool,
+    ) -> RGB {
+        // combine the surface color with the light's color/intensity
+        let effective_color = self.color * light.get_intensity();
+        let diffuse;
+        let specular;
+        // find the direction to the light source
+        let lightv = (light.get_position() - *position).normalize();
+        // compute the ambient contribution
+        let ambient = effective_color * self.ambient;
+        // light_dot normal represent the cosine of the angle between the
+        // light vector and the normal vector.
+        // A negative number means the light is on the other side of the surface.
+        let light_dot_normal = lightv.dot(*normalv);
+        if light_dot_normal <= 0.0 {
+            diffuse = BLACK;
+            specular = BLACK;
         } else {
-            // compute the specular contribution
-            let factor = reflect_dot_eye.powf(material.shinniness);
-            specular = light.get_intensity() * material.specular * factor;
-        }
-    }
+            // compute the diffuse contribution
+            diffuse = effective_color * self.diffuse * light_dot_normal;
+            // reflect_dot_eye represents the cosine of the angle between the
+            // reflection vector and the eye vector.
+            // A negative number means the light reflects away from the eye.
+            let reflectv = lightv.neg().reflect(*normalv);
+            let reflect_dot_eye = reflectv.dot(*eyev);
 
-    // add the three contributin together to get the final shading
-    return ambient + diffuse + specular;
+            if reflect_dot_eye <= 0.0 {
+                specular = BLACK;
+            } else {
+                // compute the specular contribution
+                let factor = reflect_dot_eye.powf(self.shinniness);
+                specular = light.get_intensity() * self.specular * factor;
+            }
+        }
+
+        // add the three contributions together to get the final shading
+        return ambient + if !in_shadow {diffuse + specular} else {BLACK};
+    }
 }
 
 #[cfg(test)]
@@ -99,9 +102,9 @@ mod test {
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 0.0, -1.0);
-        let nomralv = Vector::new(0.0, 0.0, -1.0);
-        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), RGB::new(1.0, 1.0, 1.0));
-        let result = lightning(&m, &light, &position, &eyev, &nomralv);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE);
+        let result = m.lightning(&light, &position, &eyev, &normalv, false);
 
         assert_eq!(result, RGB::new(1.9, 1.9, 1.9));
     }
@@ -111,11 +114,11 @@ mod test {
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0);
-        let nomralv = Vector::new(0.0, 0.0, -1.0);
-        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), RGB::new(1.0, 1.0, 1.0));
-        let result = lightning(&m, &light, &position, &eyev, &nomralv);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE);
+        let result = m.lightning(&light, &position, &eyev, &normalv, false);
 
-        assert_eq!(result, RGB::new(1.0, 1.0, 1.0));
+        assert_eq!(result, WHITE);
     }
 
     #[test]
@@ -123,9 +126,9 @@ mod test {
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 0.0, -1.0);
-        let nomralv = Vector::new(0.0, 0.0, -1.0);
-        let light = PointLight::new(Point::new(0.0, 10.0, -10.0), RGB::new(1.0, 1.0, 1.0));
-        let result = lightning(&m, &light, &position, &eyev, &nomralv);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 10.0, -10.0), WHITE);
+        let result = m.lightning(&light, &position, &eyev, &normalv, false);
 
         assert_eq!(result, RGB::new(0.7364, 0.7364, 0.7364));
     }
@@ -135,9 +138,9 @@ mod test {
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, -2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
-        let nomralv = Vector::new(0.0, 0.0, -1.0);
-        let light = PointLight::new(Point::new(0.0, 10.0, -10.0), RGB::new(1.0, 1.0, 1.0));
-        let result = lightning(&m, &light, &position, &eyev, &nomralv);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 10.0, -10.0), WHITE);
+        let result = m.lightning(&light, &position, &eyev, &normalv, false);
 
         assert_eq!(result, RGB::new(1.6364, 1.6363, 1.6364));
     }
@@ -147,9 +150,22 @@ mod test {
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 0.0, -1.0);
-        let nomralv = Vector::new(0.0, 0.0, -1.0);
-        let light = PointLight::new(Point::new(0.0, 0.0, 10.0), RGB::new(1.0, 1.0, 1.0));
-        let result = lightning(&m, &light, &position, &eyev, &nomralv);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, 10.0), WHITE);
+        let result = m.lightning(&light, &position, &eyev, &normalv, false);
+
+        assert_eq!(result, RGB::new(0.1, 0.1, 0.1));
+    }
+
+    #[test]
+    fn surface_shadow_lightning() {
+        let m = Material::default();
+        let position = Point::new(0.0, 0.0, 0.0);
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE);
+        let in_shadow = true;
+        let result = m.lightning(&light, &position, &eyev, &normalv, in_shadow);
 
         assert_eq!(result, RGB::new(0.1, 0.1, 0.1));
     }

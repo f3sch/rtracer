@@ -19,7 +19,7 @@ impl World {
     }
 
     /// Set the light source of the world.
-    pub fn set_light(&mut self, light:PointLight){
+    pub fn set_light(&mut self, light: PointLight) {
         self.light = Some(light);
     }
 
@@ -65,16 +65,17 @@ impl World {
 
     /// Compute the color at the intersection.
     pub fn shade_hit(&self, comps: &Computation) -> RGB {
-        lightning(
-            &comps.object.get_material(),
+        let shadowed = self.is_shadowed(comps.over_point);
+        comps.object.get_material().lightning(
             &self.light.expect("World has no light!"),
             &comps.point,
             &comps.eyev,
             &comps.normalv,
+            shadowed,
         )
     }
 
-    ///
+    /// Compute the Color of a Ray.
     pub fn color_at(&self, ray: &Ray) -> RGB {
         match self.intersect_world(ray) {
             Some(xs) => match hit(xs) {
@@ -87,28 +88,43 @@ impl World {
             None => BLACK,
         }
     }
+
+    /// Test if a point is in shadows.
+    pub fn is_shadowed(&self, p: Point) -> bool {
+        let v = self.light.expect("World has no light!").get_position() - p;
+        let distance = v.magnitude();
+        let direction = v.normalize();
+
+        let r = Ray::new(p, direction);
+        if let Some(intersections) = self.intersect_world(&r) {
+            if let Some(h) = hit(intersections) {
+                if h.t < distance {
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
 }
 
 impl Default for World {
     fn default() -> Self {
         let mut w = World::new();
 
-        w.light = Some(PointLight::new(
-            Point::new(-10.0, 10.0, -10.0),
-            RGB::new(1.0, 1.0, 1.0),
-        ));
+        w.light = Some(PointLight::new(Point::new(-10.0, 10.0, -10.0), WHITE));
         let mut s1 = Sphere::new();
         let mut m1 = Material::default();
         m1.color = RGB::new(0.8, 1.0, 0.6);
         m1.diffuse = 0.7;
         m1.specular = 0.2;
         s1.set_material(m1);
-        w.add_object(Box::new(s1));
+        add_object!(w, s1);
 
         let mut s2 = Sphere::new();
         let t2 = Transformation::new().scaling(0.5, 0.5, 0.5);
         s2.set_transform(t2);
-        w.add_object(Box::new(s2));
+        add_object!(w, s2);
 
         w
     }

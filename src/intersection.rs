@@ -1,4 +1,4 @@
-use crate::{float_cmp, float_eq, shapes::*, Computation, Ray};
+use crate::{float_cmp, float_eq, shapes::*, Computation, Ray, EPSILON};
 
 /// Generic intersection object, which works on all shapes that
 /// implement the 'Shape' trait.
@@ -31,6 +31,8 @@ impl<'a> Intersection<'a> {
             normalv = -normalv;
         }
 
+        let over_point = point + normalv * EPSILON;
+
         Computation {
             t: self.t,
             object: self.object,
@@ -38,6 +40,7 @@ impl<'a> Intersection<'a> {
             eyev,
             normalv,
             inside,
+            over_point,
         }
     }
 }
@@ -73,7 +76,7 @@ pub fn hit(mut xs: Vec<Intersection>) -> Option<Intersection> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{Point, Sphere, Vector};
+    use crate::{Point, Sphere, Transformation, Vector, EPSILON};
 
     #[test]
     fn sphere_intersection() {
@@ -176,5 +179,17 @@ mod test {
         assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
         assert!(comps.inside);
         assert_eq!(comps.normalv, Vector::new(0.0, 0.0, -1.0));
+    }
+
+    #[test]
+    fn hit_offset_point_intersection() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let mut shape = Sphere::new();
+        shape.set_transform(Transformation::new().translation(0.0, 0.0, 1.0));
+        let i = Intersection::new(5.0, &shape);
+        let comps = i.prepare_computations(&r);
+
+        assert!(comps.over_point.z < -EPSILON / 2.0);
+        assert!(comps.point.z > comps.over_point.z);
     }
 }

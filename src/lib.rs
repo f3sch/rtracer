@@ -53,14 +53,13 @@ pub use crate::shapes::Shape;
 pub use crate::shapes::Sphere;
 
 mod intersection;
-pub use crate::intersection::Intersection;
 pub use crate::intersection::hit;
+pub use crate::intersection::Intersection;
 
 mod light;
 pub use crate::light::PointLight;
 
 mod material;
-pub use crate::material::lightning;
 pub use crate::material::Material;
 
 mod world;

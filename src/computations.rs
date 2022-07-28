@@ -8,7 +8,7 @@ pub struct Computation<'a> {
     /// The object intersected by a Ray.
     pub object: &'a dyn Shape,
 
-    /// Point in world space where the Intersection occured.
+    /// Point in world space where the Intersection occurred.
     pub point: Point,
 
     /// Eye Vector of the surface of the object.
@@ -19,4 +19,7 @@ pub struct Computation<'a> {
 
     /// Is the intersection inside of the shape?
     pub inside: bool,
+
+    /// over_point represents what?
+    pub over_point: Point,
 }
