@@ -286,7 +286,7 @@ mod test {
         let t1 = Transformation::new().scaling(1.0, 0.5, 1.0);
         let t2 = Transformation::new().rotate_z(PI / 5.0);
         s.set_transform(t1 * t2);
-        let n = s.normal_at(Point::new(0.0, 2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0));
+        let n = s.normal_at(Point::new(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt()) / 2.0));
 
         assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254));
     }

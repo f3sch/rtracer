@@ -74,13 +74,7 @@ impl PartialEq for Point {
 
 impl fmt::Display for Point {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "x: {0:>10} y: {1:>10} z: {2:>10}",
-            format!("{0:.5}", self.x),
-            format!("{0:.5}", self.y),
-            format!("{0:.5}", self.z)
-        )
+        write!(f, "x: {0:.5} y: {1:.5} z: {2:.5}", self.x, self.y, self.z)
     }
 }
 

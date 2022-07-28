@@ -1,4 +1,4 @@
-use crate::{Point, PointLight, Vector, RGB, WHITE,BLACK};
+use crate::{Point, PointLight, Vector, BLACK, RGB, WHITE};
 
 /// A Material encapsulates all the properties of the surface.
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -53,7 +53,7 @@ impl Material {
         // light vector and the normal vector.
         // A negative number means the light is on the other side of the surface.
         let light_dot_normal = lightv.dot(normalv);
-        if light_dot_normal <= 0.0 || in_shadow{
+        if light_dot_normal <= 0.0 || in_shadow {
             diffuse = BLACK;
             specular = BLACK;
         } else {
@@ -136,7 +136,7 @@ mod test {
     fn eye_surface_path_lightning() {
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
-        let eyev = Vector::new(0.0, -2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
+        let eyev = Vector::new(0.0, -(2_f64.sqrt()) / 2.0, -(2_f64.sqrt()) / 2.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), WHITE);
         let result = m.lightning(light, position, eyev, normalv, false);

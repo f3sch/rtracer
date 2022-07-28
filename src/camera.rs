@@ -152,7 +152,7 @@ mod test {
         assert_eq!(r.origin, Point::new(0.0, 2.0, -5.0));
         assert_eq!(
             r.direction,
-            Vector::new(2_f64.sqrt() / 2.0, 0.0, -2_f64.sqrt() / 2.0)
+            Vector::new(2_f64.sqrt() / 2.0, 0.0, -(2_f64.sqrt()) / 2.0)
         );
     }
 

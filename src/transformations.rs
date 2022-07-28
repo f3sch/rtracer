@@ -235,7 +235,7 @@ mod test {
 
         assert_eq!(
             inv * p,
-            Point::new(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0)
+            Point::new(0.0, 2.0_f64.sqrt() / 2.0, -(2.0_f64.sqrt()) / 2.0)
         );
     }
 
@@ -260,7 +260,7 @@ mod test {
 
         assert_eq!(
             half_quarter * p,
-            Point::new(-2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0, 0.0)
+            Point::new(-(2.0_f64.sqrt()) / 2.0, 2.0_f64.sqrt() / 2.0, 0.0)
         );
         assert_eq!(full_quarter * p, Point::new(-1.0, 0.0, 0.0));
     }

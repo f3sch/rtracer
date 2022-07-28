@@ -1,4 +1,4 @@
-use crate::{color::RGB,BLACK};
+use crate::{color::RGB, BLACK};
 
 /// Canvas object
 #[derive(Debug)]
@@ -63,7 +63,7 @@ impl Canvas {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{BLACK,RED};
+    use crate::{BLACK, RED};
 
     #[test]
     fn create_canvas() {
