@@ -69,7 +69,7 @@ fn draw_shape(shape: &dyn Shape, light: &PointLight, file_name: &str) {
                 let color = xs[0]
                     .object
                     .get_material()
-                    .lightning(light, &point, &eye, &normal, false);
+                    .lightning(*light, point, eye, normal, false);
                 canvas.write_pixel(x, y, color);
             }
         }
