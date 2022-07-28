@@ -1,4 +1,4 @@
-use crate::{Point, PointLight, Vector, RGB, WHITE,BLACK};
+use crate::{Point, PointLight, Vector, BLACK, RGB, WHITE};
 use std::ops::Neg;
 
 /// A Material encapsulates all the properties of the surface.
@@ -23,7 +23,7 @@ pub struct Material {
 impl Default for Material {
     fn default() -> Self {
         Self {
-            color:WHITE,
+            color: WHITE,
             ambient: 0.1,
             diffuse: 0.9,
             specular: 0.9,
@@ -76,7 +76,12 @@ impl Material {
         }
 
         // add the three contributions together to get the final shading
-        return ambient + if !in_shadow {diffuse + specular} else {BLACK};
+        return ambient
+            + if !in_shadow {
+                diffuse + specular
+            } else {
+                BLACK
+            };
     }
 }
 

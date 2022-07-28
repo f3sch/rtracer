@@ -145,7 +145,7 @@ mod test {
     #[test]
     fn default_world() {
         let w = World::default();
-        let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), RGB::new(1.0, 1.0, 1.0));
+        let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), WHITE);
         let mut s1 = Sphere::new();
         let mut m1 = Material::default();
         m1.color = RGB::new(0.8, 1.0, 0.6);
@@ -210,10 +210,7 @@ mod test {
     #[test]
     fn shading_inside_intersection() {
         let mut w = World::default();
-        w.light = Some(PointLight::new(
-            Point::new(0.0, 0.25, 0.0),
-            RGB::new(1.0, 1.0, 1.0),
-        ));
+        w.light = Some(PointLight::new(Point::new(0.0, 0.25, 0.0), WHITE));
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let shape = w
             .get_object(1)
@@ -263,5 +260,54 @@ mod test {
         let c = w.color_at(&r);
 
         assert_eq!(c, inner.get_material().color);
+    }
+
+    #[test]
+    fn point_collinear_light_world() {
+        let w = World::default();
+        let p = Point::new(0.0, 10.0, 0.0);
+
+        assert!(!w.is_shadowed(p));
+    }
+
+    #[test]
+    fn point_object_light_world() {
+        let w = World::default();
+        let p = Point::new(10.0, -10.0, 10.0);
+
+        assert!(w.is_shadowed(p));
+    }
+
+    #[test]
+    fn point_light_object_world() {
+        let w = World::default();
+        let p = Point::new(-20.0, 20.0, -20.0);
+
+        assert!(!w.is_shadowed(p));
+    }
+
+    #[test]
+    fn object_point_light_world() {
+        let w = World::default();
+        let p = Point::new(-2.0, 2.0, -2.0);
+
+        assert!(!w.is_shadowed(p));
+    }
+
+    #[test]
+    fn shade_hit_shadow_world() {
+        let mut w = World::new();
+        w.light = Some(PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE));
+        let s1 = Sphere::new();
+        add_object!(w, s1);
+        let mut s2 = Sphere::new();
+        s2.set_transform(Transformation::new().translation(0.0, 0.0, -10.0));
+        add_object!(w, s2);
+        let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
+        let i = Intersection::new(4.0, w.get_object(1).expect("Where is it?"));
+        let comps = i.prepare_computations(&r);
+        let c = w.shade_hit(&comps);
+
+        assert_eq!(c, RGB::new(0.1, 0.1, 0.1));
     }
 }

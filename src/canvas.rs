@@ -1,4 +1,4 @@
-use crate::{color::RGB,RED, BLACK};
+use crate::{color::RGB, BLACK, RED};
 
 /// Canvas object
 #[derive(Debug)]

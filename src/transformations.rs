@@ -140,9 +140,9 @@ impl Mul<Transformation> for Transformation {
 
 impl PartialEq for Transformation {
     fn eq(&self, other: &Self) -> bool {
-        for r in 0..4{
-            for c in 0..4{
-                if !float_eq(self.data[r][c],other.data[r][c]){
+        for r in 0..4 {
+            for c in 0..4 {
+                if !float_eq(self.data[r][c], other.data[r][c]) {
                     return false;
                 }
             }

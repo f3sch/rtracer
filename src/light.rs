@@ -4,7 +4,7 @@ use std::fmt::Debug;
 /// A PointLight is light with no size, exisiting at a single
 /// point in space.
 /// It is also defined by its intensity.
-#[derive(Debug,Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct PointLight {
     /// Essentially the same as brightness.
     intensity: RGB,
