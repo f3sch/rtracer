@@ -2,7 +2,7 @@ use crate::float_eq;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// The Vector in a left-coordinate system.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Vector {
     /// Distance from origin along the X axis.
     pub x: f64,

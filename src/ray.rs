@@ -4,7 +4,7 @@ use crate::{Matrix, Point, Vector};
 /// Each ray created by your ray tracer will have a starting point
 /// called the origin, and a vector called the direction which says
 /// where it points.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Ray {
     /// Starting point.
     pub origin: Point,

@@ -30,16 +30,31 @@ pub trait Shape: 'static + Debug {
     /// A ray _can_ intersect a shape.
     /// This returns a collection of unit time(s) 't',
     /// when the ray intersects the shape.
-    fn intersect(&self, ray: &Ray) -> Option<Vec<Intersection>>;
+    fn intersect(&self, ray: &Ray) -> Option<Vec<Intersection>> {
+        let local_ray = ray.transform(
+            self.get_transform()
+                .init()
+                .inverse(4)
+                .expect("The transformation matrix should invertible!"),
+        );
+        self.local_intersect(&local_ray)
+    }
+
+    /// Perform the actual intersection of the ray.
+    fn local_intersect(&self, ray: &Ray) -> Option<Vec<Intersection>>;
 
     /// Compute a normal at a given point for a shape.
     fn normal_at(&self, world_point: Point) -> Vector {
         let inv = self.get_transform().init().inverse(4).unwrap();
-        let object_point = inv * world_point;
-        let object_normal = object_point - Point::new(0.0, 0.0, 0.0);
-        let world_normal = inv.transpose() * object_normal;
+        let local_point = inv * world_point;
+        let local_normal = self.local_normal_at(local_point);
+        let world_normal = inv.transpose() * local_normal;
+
         world_normal.normalize()
     }
+
+    /// Compute the local normal.
+    fn local_normal_at(&self, point: Point) -> Vector;
 }
 
 impl PartialEq for dyn Shape {

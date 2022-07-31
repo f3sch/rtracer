@@ -5,7 +5,7 @@ use std::{
 };
 
 /// The Point in a left-coordinate system from the origin.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Point {
     /// Distance from origin along the X axis.
     pub x: f64,

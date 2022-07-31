@@ -151,6 +151,12 @@ impl PartialEq for Transformation {
     }
 }
 
+impl Default for Transformation {
+    fn default() -> Self {
+        Transformation::new()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

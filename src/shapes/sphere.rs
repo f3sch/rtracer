@@ -54,15 +54,10 @@ impl Shape for Sphere {
         self.transform = t;
     }
 
-    fn intersect(&self, ray: &Ray) -> Option<Vec<Intersection>> {
-        let inv = match self.transform.init().inverse(4) {
-            None => return None,
-            Some(inv) => inv,
-        };
-        let ray_t = ray.transform(inv);
-        let sphere_to_ray = ray_t.origin - Point::new(0.0, 0.0, 0.0);
-        let a = ray_t.direction.dot(ray_t.direction);
-        let b = 2.0 * ray_t.direction.dot(sphere_to_ray);
+    fn local_intersect(&self, ray: &Ray) -> Option<Vec<Intersection>> {
+        let sphere_to_ray = ray.origin - Point::new(0.0, 0.0, 0.0);
+        let a = ray.direction.dot(ray.direction);
+        let b = 2.0 * ray.direction.dot(sphere_to_ray);
         let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
         let discriminant = b * b - 4.0 * a * c;
 
@@ -76,6 +71,10 @@ impl Shape for Sphere {
             Intersection::new(t1, self),
             Intersection::new(t2, self),
         ])
+    }
+
+    fn local_normal_at(&self, point: Point) -> Vector {
+        point - Point::new(0.0, 0.0, 0.0)
     }
 }
 
@@ -174,22 +173,6 @@ mod test {
     }
 
     #[test]
-    fn get_transform_sphere() {
-        let s = Sphere::new();
-
-        assert_eq!(s.transform.init(), IDENTITY);
-    }
-
-    #[test]
-    fn set_transform_sphere() {
-        let mut s = Sphere::new();
-        let t = Transformation::new().translation(2.0, 3.0, 4.0);
-        s.set_transform(t);
-
-        assert_eq!(s.transform.init(), t.init());
-    }
-
-    #[test]
     fn intersect_scaled_sphere() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut s = Sphere::new();
@@ -281,23 +264,5 @@ mod test {
         let n = s.normal_at(Point::new(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt()) / 2.0));
 
         assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254));
-    }
-
-    #[test]
-    fn has_material_sphere() {
-        let s = Sphere::new();
-        let m = s.material;
-
-        assert_eq!(m, Material::default());
-    }
-
-    #[test]
-    fn assign_material_sphere() {
-        let mut s = Sphere::new();
-        let mut m = s.material;
-        m.ambient = 1.0;
-        s.material = m;
-
-        assert_eq!(s.material, m);
     }
 }
