@@ -1,4 +1,5 @@
 use crate::{Canvas, Point, Ray, Transformation, World};
+use progress_bar::*;
 
 /// Just like a real camera, the virtual camera allows moving around in the scene.
 pub struct Camera {
@@ -77,6 +78,8 @@ impl Camera {
 
     /// Render a view of the given world with the camera.
     pub fn render(&self, world: &World) -> Canvas {
+        init_progress_bar(self.hsize * self.vsize);
+        set_progress_bar_action("Rendering", Color::Blue, Style::Bold);
         let mut canvas = Canvas::new(self.hsize, self.vsize);
 
         for y in 0..self.vsize {
@@ -85,8 +88,10 @@ impl Camera {
                 let color = world.color_at(&ray);
 
                 canvas.write_pixel(x, y, color);
+                inc_progress_bar();
             }
         }
+        finalize_progress_bar();
 
         canvas
     }
