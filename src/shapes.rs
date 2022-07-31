@@ -66,3 +66,5 @@ impl PartialEq for dyn Shape {
 /// export all known shapes
 pub mod sphere;
 pub use sphere::Sphere;
+pub mod plane;
+pub use plane::Plane;
