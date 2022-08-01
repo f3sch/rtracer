@@ -25,6 +25,13 @@ macro_rules! add_object {
     };
 }
 
+#[macro_export]
+macro_rules! set_pattern {
+    ($obj:expr, $p:expr) => {
+        $obj.get_material_mut().pattern = Some(Box::new($p))
+    };
+}
+
 mod point;
 pub use crate::point::Point;
 

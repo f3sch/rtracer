@@ -1,15 +1,19 @@
-use crate::{Pattern, Point, Shape, Transformation, BLACK, RGB, WHITE};
+use crate::{Pattern, Point, Transformation, BLACK, RGB, WHITE};
+use uuid::Uuid;
 
 /// This generates stripes for any Shape.
 #[derive(Debug, Clone, Copy)]
 pub struct Stripes {
+    /// Unique identifier for pattern.
+    pub uuid: Uuid,
+
     /// Color 1.
     pub a: RGB,
 
     /// Color 2.
     pub b: RGB,
 
-    ///
+    /// Transformation matrix.
     pub transform: Transformation,
 }
 
@@ -22,6 +26,7 @@ impl Stripes {
     /// Generate a Stripe Pattern with given RGBs.
     pub fn stripe_pattern(a: RGB, b: RGB) -> Self {
         Self {
+            uuid: Uuid::new_v4(),
             a,
             b,
             transform: Transformation::new(),
@@ -36,34 +41,12 @@ impl Stripes {
             self.b
         }
     }
-
-    /// Return the RGB value for the given Shape and Point.
-    pub fn stripe_at_object(&self, object: &dyn Shape, world_point: Point) -> RGB {
-        let object_point = object
-            .get_transform()
-            .init()
-            .inverse(4)
-            .expect("Object transform should be invertible")
-            * world_point;
-        let pattern_point = self
-            .transform
-            .init()
-            .inverse(4)
-            .expect("Pattern transform should be invertible")
-            * object_point;
-
-        self.stripe_at(pattern_point)
-    }
-
-    /// Set the transformation matrix.
-    pub fn set_pattern_transform(&mut self, t: Transformation) {
-        self.transform = t;
-    }
 }
 
 impl Default for Stripes {
     fn default() -> Self {
         Self {
+            uuid: Uuid::new_v4(),
             a: WHITE,
             b: BLACK,
             transform: Transformation::default(),
@@ -73,16 +56,31 @@ impl Default for Stripes {
 
 impl PartialEq for Stripes {
     fn eq(&self, other: &Self) -> bool {
-        self.a == other.a && self.b == other.b
+        self.id() == other.id()
     }
 }
 
-impl Pattern for Stripes {}
+impl Pattern for Stripes {
+    fn id(&self) -> Uuid {
+        self.uuid
+    }
+
+    fn get_transform(&self) -> Transformation {
+        self.transform
+    }
+
+    fn set_transform(&mut self, t: Transformation) {
+        self.transform = t;
+    }
+
+    fn pattern_at(&self, point: Point) -> RGB {
+        self.stripe_at(point)
+    }
+}
 
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{Sphere, Transformation};
 
     #[test]
     fn create_stripe() {
@@ -127,36 +125,5 @@ mod test {
         assert_eq!(pattern.stripe_at(Point::new(1.0, 0.0, 0.0)), BLACK);
         assert_eq!(pattern.stripe_at(Point::new(-0.1, 0.0, 0.0)), BLACK);
         assert_eq!(pattern.stripe_at(Point::new(-1.1, 0.0, 0.0)), WHITE);
-    }
-
-    #[test]
-    fn object_transform_stripe() {
-        let mut object = Sphere::new();
-        object.set_transform(Transformation::new().scaling(2.0, 2.0, 2.0));
-        let pattern = Stripes::new();
-        let c = pattern.stripe_at_object(&object, Point::new(1.5, 0.0, 0.0));
-
-        assert_eq!(c, WHITE);
-    }
-
-    #[test]
-    fn pattern_transform_stripe() {
-        let object = Sphere::new();
-        let mut pattern = Stripes::new();
-        pattern.set_pattern_transform(Transformation::new().scaling(2.0, 2.0, 2.0));
-        let c = pattern.stripe_at_object(&object, Point::new(1.5, 0.0, 0.0));
-
-        assert_eq!(c, WHITE);
-    }
-
-    #[test]
-    fn pattern_object_transform_stripe() {
-        let mut object = Sphere::new();
-        object.set_transform(Transformation::new().scaling(2.0, 2.0, 2.0));
-        let mut pattern = Stripes::new();
-        pattern.set_pattern_transform(Transformation::new().scaling(2.0, 2.0, 2.0));
-        let c = pattern.stripe_at_object(&object, Point::new(1.5, 0.0, 0.0));
-
-        assert_eq!(c, WHITE);
     }
 }

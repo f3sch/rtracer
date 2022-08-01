@@ -1,6 +1,6 @@
 use rtracer::{
-    add_object, shapes::Plane, shapes::Shape, shapes::Sphere, Camera, Point, PointLight, Stripes,
-    Transformation, Vector, World, BLUE, GREEN, RED, RGB, WHITE,
+    add_object, set_pattern, shapes::Plane, shapes::Shape, shapes::Sphere, Camera, Pattern, Point,
+    PointLight, Stripes, Transformation, Vector, World, BLUE, GREEN, RED, RGB, WHITE,
 };
 use std::{f64::consts::PI, fs::File, io::Write, path::Path};
 
@@ -11,25 +11,25 @@ fn main() {
     floor.get_material_mut().color = RGB::new(1.0, 0.9, 0.9);
     floor.get_material_mut().specular = 0.0;
     let mut pattern = Stripes::stripe_pattern(BLUE, GREEN);
-    pattern.set_pattern_transform(
+    pattern.set_transform(
         Transformation::new()
             .scaling(0.5, 0.5, 0.5)
             .rotate_y(PI / 6.0),
     );
-    floor.get_material_mut().pattern = Some(pattern);
+    set_pattern!(floor, pattern);
     add_object!(world, floor);
 
     let mut middle = Sphere::new();
     middle.set_transform(Transformation::new().translation(-0.5, 1.0, 0.5));
     middle.get_material_mut().diffuse = 0.7;
     let mut pattern = Stripes::stripe_pattern(RED, WHITE);
-    pattern.set_pattern_transform(
+    pattern.set_transform(
         Transformation::new()
             .scaling(0.1, 0.1, 0.1)
             .rotate_y(PI / 3.0)
             .rotate_y(PI / 4.0),
     );
-    middle.get_material_mut().pattern = Some(pattern);
+    set_pattern!(middle, pattern);
     add_object!(world, middle);
 
     let mut right = Sphere::new();

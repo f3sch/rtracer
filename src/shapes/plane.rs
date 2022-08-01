@@ -24,8 +24,8 @@ impl Shape for Plane {
         self.uuid
     }
 
-    fn get_material(&self) -> Material {
-        self.material
+    fn get_material(&self) -> &Material {
+        &self.material
     }
 
     fn get_material_mut(&mut self) -> &mut Material {

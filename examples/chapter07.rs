@@ -21,6 +21,9 @@ fn main() {
             .rotate_y(-PI / 4.0)
             .translation(0.0, 0.0, 5.0),
     );
+    let mut m = Material::default();
+    m.color = RGB::new(1.0, 0.9, 0.9);
+    m.specular = 0.0;
     left_wall.set_material(m);
     add_object!(world, left_wall);
 
@@ -32,6 +35,9 @@ fn main() {
             .rotate_y(PI / 4.0)
             .translation(0.0, 0.0, 5.0),
     );
+    let mut m = Material::default();
+    m.color = RGB::new(1.0, 0.9, 0.9);
+    m.specular = 0.0;
     right_wall.set_material(m);
     add_object!(world, right_wall);
 

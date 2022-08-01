@@ -13,7 +13,7 @@ pub trait Shape: 'static + Debug {
     }
 
     /// Return the material of a shape
-    fn get_material(&self) -> Material;
+    fn get_material(&self) -> &Material;
 
     /// Return the material of a shape
     fn get_material_mut(&mut self) -> &mut Material;

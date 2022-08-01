@@ -26,8 +26,8 @@ fn main() {
             .translation(-1.25, 1.5, -2.0),
     );
     wrist.get_material_mut().color = RGB::new(0.1, 1.0, 0.5);
-    wrist.get_material().diffuse = 0.7;
-    wrist.get_material().specular = 0.3;
+    wrist.get_material_mut().diffuse = 0.7;
+    wrist.get_material_mut().specular = 0.3;
     add_object!(world, wrist);
 
     let mut palm = Sphere::new();

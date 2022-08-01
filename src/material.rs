@@ -1,7 +1,7 @@
-use crate::{Point, PointLight, Shape, Stripes, Vector, BLACK, RGB, WHITE};
+use crate::{Pattern, Point, PointLight, Shape, Vector, BLACK, RGB, WHITE};
 
 /// A Material encapsulates all the properties of the surface.
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq)]
 pub struct Material {
     /// The color.
     pub color: RGB,
@@ -19,7 +19,7 @@ pub struct Material {
     pub shinniness: f64,
 
     /// General Pattern of the material
-    pub pattern: Option<Stripes>,
+    pub pattern: Option<Box<dyn Pattern>>,
 }
 
 impl Default for Material {
@@ -46,10 +46,10 @@ impl Material {
         normalv: Vector,
         in_shadow: bool,
     ) -> RGB {
-        let mut color = self.color;
-        if self.pattern.is_some() {
-            color = self.pattern.unwrap().stripe_at_object(object, position);
-        }
+        let color = match self.pattern.as_ref() {
+            Some(pattern) => pattern.pattern_at_shape(object, position),
+            None => self.color,
+        };
 
         // combine the surface color with the light's color/intensity
         let effective_color = color * light.get_intensity();
@@ -91,7 +91,7 @@ impl Material {
 
 #[cfg(test)]
 mod test {
-    use crate::{PointLight, Sphere};
+    use crate::{PointLight, Sphere, Stripes};
 
     use super::*;
 
@@ -189,7 +189,7 @@ mod test {
     fn pattern_lightning() {
         let s = Sphere::new();
         let mut m = Material::default();
-        m.pattern = Some(Stripes::new());
+        m.pattern = Some(Box::new(Stripes::new()));
         m.ambient = 1.0;
         m.diffuse = 0.0;
         m.specular = 0.0;
