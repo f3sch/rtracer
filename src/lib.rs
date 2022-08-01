@@ -71,3 +71,7 @@ pub use crate::computations::Computation;
 
 mod camera;
 pub use crate::camera::Camera;
+
+pub mod pattern;
+pub use crate::pattern::Pattern;
+pub use crate::pattern::Stripes;

@@ -89,7 +89,7 @@ mod test {
     use std::f64::consts::PI;
 
     use super::*;
-    use crate::{Point, Ray, Transformation, Vector, IDENTITY};
+    use crate::{Point, Ray, Transformation, Vector};
 
     #[test]
     fn unique_sphere() {

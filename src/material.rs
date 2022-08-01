@@ -1,4 +1,4 @@
-use crate::{Point, PointLight, Vector, BLACK, RGB, WHITE};
+use crate::{Point, PointLight, Shape, Stripes, Vector, BLACK, RGB, WHITE};
 
 /// A Material encapsulates all the properties of the surface.
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -17,6 +17,9 @@ pub struct Material {
 
     /// Parameter in Phong reflection model.
     pub shinniness: f64,
+
+    /// General Pattern of the material
+    pub pattern: Option<Stripes>,
 }
 
 impl Default for Material {
@@ -27,6 +30,7 @@ impl Default for Material {
             diffuse: 0.9,
             specular: 0.9,
             shinniness: 200.0,
+            pattern: None,
         }
     }
 }
@@ -35,14 +39,20 @@ impl Material {
     /// Calculate the lightning of shape from a Light source.
     pub fn lightning(
         &self,
+        object: &dyn Shape,
         light: PointLight,
         position: Point,
         eyev: Vector,
         normalv: Vector,
         in_shadow: bool,
     ) -> RGB {
+        let mut color = self.color;
+        if self.pattern.is_some() {
+            color = self.pattern.unwrap().stripe_at_object(object, position);
+        }
+
         // combine the surface color with the light's color/intensity
-        let effective_color = self.color * light.get_intensity();
+        let effective_color = color * light.get_intensity();
         let diffuse;
         let specular;
         // find the direction to the light source
@@ -81,7 +91,7 @@ impl Material {
 
 #[cfg(test)]
 mod test {
-    use crate::PointLight;
+    use crate::{PointLight, Sphere};
 
     use super::*;
 
@@ -98,74 +108,98 @@ mod test {
 
     #[test]
     fn eye_surface_lightning() {
+        let s = Sphere::new();
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE);
-        let result = m.lightning(light, position, eyev, normalv, false);
+        let result = m.lightning(&s, light, position, eyev, normalv, false);
 
         assert_eq!(result, RGB::new(1.9, 1.9, 1.9));
     }
 
     #[test]
     fn eye_45_surface_lightning() {
+        let s = Sphere::new();
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE);
-        let result = m.lightning(light, position, eyev, normalv, false);
+        let result = m.lightning(&s, light, position, eyev, normalv, false);
 
         assert_eq!(result, WHITE);
     }
 
     #[test]
     fn eye_surface_45_lightning() {
+        let s = Sphere::new();
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), WHITE);
-        let result = m.lightning(light, position, eyev, normalv, false);
+        let result = m.lightning(&s, light, position, eyev, normalv, false);
 
         assert_eq!(result, RGB::new(0.7364, 0.7364, 0.7364));
     }
 
     #[test]
     fn eye_surface_path_lightning() {
+        let s = Sphere::new();
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, -(2_f64.sqrt()) / 2.0, -(2_f64.sqrt()) / 2.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), WHITE);
-        let result = m.lightning(light, position, eyev, normalv, false);
+        let result = m.lightning(&s, light, position, eyev, normalv, false);
 
         assert_eq!(result, RGB::new(1.6364, 1.6363, 1.6364));
     }
 
     #[test]
     fn eye_surface_behind_lightning() {
+        let s = Sphere::new();
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, 10.0), WHITE);
-        let result = m.lightning(light, position, eyev, normalv, false);
+        let result = m.lightning(&s, light, position, eyev, normalv, false);
 
         assert_eq!(result, RGB::new(0.1, 0.1, 0.1));
     }
 
     #[test]
     fn surface_shadow_lightning() {
+        let s = Sphere::new();
         let m = Material::default();
         let position = Point::new(0.0, 0.0, 0.0);
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE);
         let in_shadow = true;
-        let result = m.lightning(light, position, eyev, normalv, in_shadow);
+        let result = m.lightning(&s, light, position, eyev, normalv, in_shadow);
 
         assert_eq!(result, RGB::new(0.1, 0.1, 0.1));
+    }
+
+    #[test]
+    fn pattern_lightning() {
+        let s = Sphere::new();
+        let mut m = Material::default();
+        m.pattern = Some(Stripes::new());
+        m.ambient = 1.0;
+        m.diffuse = 0.0;
+        m.specular = 0.0;
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), WHITE);
+        let c1 = m.lightning(&s, light, Point::new(0.9, 0.0, 0.0), eyev, normalv, false);
+        let c2 = m.lightning(&s, light, Point::new(1.1, 0.0, 0.0), eyev, normalv, false);
+
+        assert_eq!(c1, WHITE);
+        assert_eq!(c2, BLACK);
     }
 }
