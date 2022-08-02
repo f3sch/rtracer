@@ -1,4 +1,4 @@
-use crate::{Pattern, Point, Transformation, BLACK, RGB, WHITE};
+use crate::{float_eq, Pattern, Point, Transformation, BLACK, RGB, WHITE};
 use uuid::Uuid;
 
 /// This generates stripes for any Shape.
@@ -35,7 +35,7 @@ impl Stripes {
 
     /// Give back the RGB value of the Stripe at point.
     pub fn stripe_at(&self, point: Point) -> RGB {
-        if point.x.floor() as i32 % 2 == 0 {
+        if float_eq(point.x.floor() % 2.0, 0.0) {
             self.a
         } else {
             self.b

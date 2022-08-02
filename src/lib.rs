@@ -80,5 +80,8 @@ mod camera;
 pub use crate::camera::Camera;
 
 pub mod pattern;
+pub use crate::pattern::Checkers;
+pub use crate::pattern::Gradient;
 pub use crate::pattern::Pattern;
+pub use crate::pattern::Ring;
 pub use crate::pattern::Stripes;

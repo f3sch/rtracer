@@ -43,3 +43,9 @@ impl PartialEq for Box<dyn Pattern> {
 
 pub mod stripes;
 pub use stripes::Stripes;
+pub mod gradient;
+pub use gradient::Gradient;
+pub mod ring;
+pub use ring::Ring;
+pub mod checkers;
+pub use checkers::Checkers;
