@@ -22,4 +22,7 @@ pub struct Computation<'a> {
 
     /// over_point represents what?
     pub over_point: Point,
+
+    /// where to reflect
+    pub reflectv: Vector,
 }

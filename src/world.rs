@@ -64,25 +64,28 @@ impl World {
     }
 
     /// Compute the color at the intersection.
-    pub fn shade_hit(&self, comps: &Computation) -> RGB {
+    pub fn shade_hit(&self, comps: &Computation, remaining: usize) -> RGB {
         let shadowed = self.is_shadowed(comps.over_point);
-        comps.object.get_material().lightning(
+        let surface = comps.object.get_material().lightning(
             comps.object,
             self.light.expect("World has no light!"),
             comps.point,
             comps.eyev,
             comps.normalv,
             shadowed,
-        )
+        );
+        let reflected = self.reflected_color(&comps, remaining);
+
+        surface + reflected
     }
 
     /// Compute the Color of a Ray.
-    pub fn color_at(&self, ray: &Ray) -> RGB {
+    pub fn color_at(&self, ray: &Ray, remaining: usize) -> RGB {
         match self.intersect_world(ray) {
             Some(xs) => match hit(xs) {
                 Some(i) => {
                     let comps = i.prepare_computations(&ray);
-                    self.shade_hit(&comps)
+                    self.shade_hit(&comps, remaining)
                 }
                 None => BLACK,
             },
@@ -106,6 +109,18 @@ impl World {
         }
 
         false
+    }
+
+    /// Compute the reflected color.
+    pub fn reflected_color(&self, comps: &Computation, remaining: usize) -> RGB {
+        if comps.object.get_material().reflective == 0.0 || remaining == 0 {
+            return BLACK;
+        }
+
+        let reflect_ray = Ray::new(comps.over_point, comps.reflectv);
+        let color = self.color_at(&reflect_ray, remaining - 1);
+
+        color * comps.object.get_material().reflective
     }
 }
 
@@ -203,7 +218,7 @@ mod test {
             .expect("Default world should have two shapes!");
         let i = Intersection::new(4.0, shape);
         let comps = i.prepare_computations(&r);
-        let c = w.shade_hit(&comps);
+        let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, RGB::new(0.38066, 0.47583, 0.2855));
     }
@@ -218,7 +233,7 @@ mod test {
             .expect("Default world should have two shapes!");
         let i = Intersection::new(0.5, shape);
         let comps = i.prepare_computations(&r);
-        let c = w.shade_hit(&comps);
+        let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, RGB::new(0.90498, 0.90498, 0.90498));
     }
@@ -227,7 +242,7 @@ mod test {
     fn color_miss_world() {
         let w = World::default();
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
-        let c = w.color_at(&r);
+        let c = w.color_at(&r, 0);
 
         assert_eq!(c, BLACK);
     }
@@ -236,7 +251,7 @@ mod test {
     fn color_hit_world() {
         let w = World::default();
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let c = w.color_at(&r);
+        let c = w.color_at(&r, 0);
 
         assert_eq!(c, RGB::new(0.38066, 0.47583, 0.2855));
     }
@@ -258,7 +273,7 @@ mod test {
             .get_object(1)
             .expect("First object must exists in default world!");
         let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
-        let c = w.color_at(&r);
+        let c = w.color_at(&r, 0);
 
         assert_eq!(c, inner.get_material().color);
     }
@@ -307,8 +322,103 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let i = Intersection::new(4.0, w.get_object(1).expect("Where is it?"));
         let comps = i.prepare_computations(&r);
-        let c = w.shade_hit(&comps);
+        let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, RGB::new(0.1, 0.1, 0.1));
+    }
+
+    #[test]
+    fn nonreflective_object() {
+        let mut w = World::default();
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+        {
+            let shape = w.get_object_mut(1).expect("Default world has 2 spheres");
+            shape.get_material_mut().ambient = 1.0;
+        }
+        let i = Intersection::new(1.0, w.get_object(1).expect("Default world has 2 spheres"));
+        let comps = i.prepare_computations(&r);
+        let color = w.reflected_color(&comps, 0);
+
+        assert_eq!(color, BLACK);
+    }
+
+    #[test]
+    fn reflective_object() {
+        let mut w = World::default();
+        let mut shape = Plane::new();
+        shape.get_material_mut().reflective = 0.5;
+        shape.set_transform(Transformation::new().translation(0.0, -1.0, 0.0));
+        add_object!(w, shape);
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(0.0, -(2_f64.sqrt() / 2.0), 2_f64.sqrt() / 2.0),
+        );
+        let i = Intersection::new(
+            2_f64.sqrt(),
+            w.get_object(2).expect("I just added this plane?"),
+        );
+        let comps = i.prepare_computations(&r);
+        let color = w.reflected_color(&comps, 4);
+
+        assert_eq!(color, RGB::new(0.19032, 0.2379, 0.14274));
+    }
+
+    #[test]
+    fn shade_hit_reflective_object() {
+        let mut w = World::default();
+        let mut shape = Plane::new();
+        shape.get_material_mut().reflective = 0.5;
+        shape.set_transform(Transformation::new().translation(0.0, -1.0, 0.0));
+        add_object!(w, shape);
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(0.0, -(2_f64.sqrt() / 2.0), 2_f64.sqrt() / 2.0),
+        );
+        let i = Intersection::new(
+            2_f64.sqrt(),
+            w.get_object(2).expect("I just added this plane?"),
+        );
+        let comps = i.prepare_computations(&r);
+        let color = w.shade_hit(&comps, 4);
+
+        assert_eq!(color, RGB::new(0.87677, 0.92436, 0.82918));
+    }
+
+    #[test]
+    fn infinite_reflection_world() {
+        let mut w = World::new();
+        w.set_light(PointLight::new(Point::new(0.0, 0.0, 0.0), WHITE));
+        let mut lower = Plane::new();
+        lower.get_material_mut().reflective = 1.0;
+        lower.set_transform(Transformation::new().translation(0.0, -1.0, 0.0));
+        add_object!(w, lower);
+        let mut upper = Plane::new();
+        upper.get_material_mut().reflective = 1.0;
+        upper.set_transform(Transformation::new().translation(0.0, 1.0, 0.0));
+        add_object!(w, upper);
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0));
+
+        w.color_at(&r, 4);
+    }
+
+    #[test]
+    fn reflective_limit_object() {
+        let mut w = World::default();
+        let mut shape = Plane::new();
+        shape.get_material_mut().reflective = 0.5;
+        shape.set_transform(Transformation::new().translation(0.0, -1.0, 0.0));
+        add_object!(w, shape);
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(0.0, -(2_f64.sqrt() / 2.0), 2_f64.sqrt() / 2.0),
+        );
+        let i = Intersection::new(
+            2_f64.sqrt(),
+            w.get_object(2).expect("I just added this plane?"),
+        );
+        let comps = i.prepare_computations(&r);
+        let color = w.reflected_color(&comps, 0);
+
+        assert_eq!(color, BLACK);
     }
 }

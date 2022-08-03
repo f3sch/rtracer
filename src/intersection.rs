@@ -32,6 +32,7 @@ impl<'a> Intersection<'a> {
         }
 
         let over_point = point + normalv * EPSILON;
+        let reflectv = r.direction().reflect(normalv);
 
         Computation {
             t: self.t,
@@ -41,6 +42,7 @@ impl<'a> Intersection<'a> {
             normalv,
             inside,
             over_point,
+            reflectv,
         }
     }
 }
@@ -191,5 +193,21 @@ mod test {
 
         assert!(comps.over_point.z < -EPSILON / 2.0);
         assert!(comps.point.z > comps.over_point.z);
+    }
+
+    #[test]
+    fn precompute_reflect_intersection() {
+        let shape = Plane::new();
+        let r = Ray::new(
+            Point::new(0.0, 1.0, -1.0),
+            Vector::new(0.0, -(2_f64.sqrt() / 2.0), 2_f64.sqrt() / 2.0),
+        );
+        let i = Intersection::new(2_f64.sqrt(), &shape);
+        let comps = i.prepare_computations(&r);
+
+        assert_eq!(
+            comps.reflectv,
+            Vector::new(0.0, 2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0)
+        );
     }
 }

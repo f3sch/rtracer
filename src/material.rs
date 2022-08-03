@@ -202,4 +202,11 @@ mod test {
         assert_eq!(c1, WHITE);
         assert_eq!(c2, BLACK);
     }
+
+    #[test]
+    fn default_material_reflect() {
+        let m = Material::default();
+
+        assert_eq!(m.reflective, 0.0);
+    }
 }

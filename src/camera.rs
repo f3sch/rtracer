@@ -85,7 +85,7 @@ impl Camera {
         for y in 0..self.vsize {
             for x in 0..self.hsize {
                 let ray = self.ray_for_pixel(x, y);
-                let color = world.color_at(&ray);
+                let color = world.color_at(&ray, 4);
 
                 canvas.write_pixel(x, y, color);
                 inc_progress_bar();
