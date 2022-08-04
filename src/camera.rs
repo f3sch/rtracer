@@ -1,4 +1,4 @@
-use crate::{Canvas, Point, Ray, Transformation, World};
+use crate::*;
 use progress_bar::*;
 use rayon::prelude::*;
 use std::time::SystemTime;

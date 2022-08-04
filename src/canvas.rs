@@ -8,7 +8,7 @@ pub struct Canvas {
     /// Height of the Canvas.
     pub height: usize,
     /// Pixels of the Canvas. TODO Avoid heap allocations!
-    pub pixels: Vec<Vec<RGB>>,
+    pub pixels: Vec<RGB>,
 }
 
 impl Canvas {
@@ -17,12 +17,12 @@ impl Canvas {
         Self {
             width,
             height,
-            pixels: vec![vec![BLACK; width]; height],
+            pixels: vec![BLACK; height * width],
         }
     }
 
     pub fn write_pixel(&mut self, x: usize, y: usize, color: RGB) {
-        self.pixels[y][x] = color;
+        self.pixels[x + y * self.width] = color;
     }
 
     pub fn to_ppm(&self) -> String {
@@ -37,7 +37,7 @@ impl Canvas {
         // Colors
         for y in 0..self.height {
             for x in 0..self.width {
-                let tmp = &self.pixels[y][x].ppm_clamp();
+                let tmp = &self.pixels[x + y * self.width].ppm_clamp();
                 counter += tmp.len();
                 ppm.push_str(tmp);
                 if counter >= 70 {
@@ -56,7 +56,7 @@ impl Canvas {
 
     /// Return the color at the given pixel.
     pub fn pixel_at(&self, x: usize, y: usize) -> RGB {
-        self.pixels[y][x]
+        self.pixels[x + y * self.width]
     }
 }
 
@@ -73,7 +73,7 @@ mod test {
         assert_eq!(c.height, 20);
         for y in 0..c.height {
             for x in 0..c.width {
-                assert_eq!(c.pixels[y][x], BLACK);
+                assert_eq!(c.pixels[x + y * c.width], BLACK);
             }
         }
     }
@@ -84,7 +84,7 @@ mod test {
         let red = RED;
         c.write_pixel(2, 3, red);
 
-        assert_eq!(c.pixels[3][2], red);
+        assert_eq!(c.pixel_at(2, 3), red);
     }
 
     #[test]
@@ -92,7 +92,7 @@ mod test {
     fn write_pixel_fail_canvas() {
         let mut c = Canvas::new(10, 20);
         let red = RED;
-        c.write_pixel(19, 1, red);
+        c.write_pixel(109, 10, red);
     }
 
     #[test]
