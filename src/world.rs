@@ -176,6 +176,9 @@ impl Default for World {
     }
 }
 
+unsafe impl Send for World {}
+unsafe impl Sync for World {}
+
 #[cfg(test)]
 mod test {
     use crate::pattern::TestPattern;

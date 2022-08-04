@@ -1,5 +1,7 @@
 use crate::{Canvas, Point, Ray, Transformation, World};
 use progress_bar::*;
+use rayon::prelude::*;
+use std::time::SystemTime;
 
 /// Just like a real camera, the virtual camera allows moving around in the scene.
 pub struct Camera {
@@ -68,7 +70,7 @@ impl Camera {
             .transform
             .init()
             .inverse(4)
-            .expect("Camera transform should be inversable!");
+            .expect("Camera transform should be invertible!");
         let pixel = inv * Point::new(world_x, world_y, -1.0);
         let origin = inv * Point::new(0.0, 0.0, 0.0);
         let direction = (pixel - origin).normalize();
@@ -82,16 +84,21 @@ impl Camera {
         set_progress_bar_action("Rendering", Color::Blue, Style::Bold);
         let mut canvas = Canvas::new(self.hsize, self.vsize);
 
-        for y in 0..self.vsize {
-            for x in 0..self.hsize {
+        let now = SystemTime::now();
+        (0..self.hsize).for_each(|y| {
+            (0..self.vsize).for_each(|x| {
                 let ray = self.ray_for_pixel(x, y);
                 let color = world.color_at(&ray, 4);
 
                 canvas.write_pixel(x, y, color);
                 inc_progress_bar();
-            }
-        }
+            })
+        });
         finalize_progress_bar();
+        match now.elapsed() {
+            Ok(elapsed) => println!("The render took {:.3} seconds", elapsed.as_secs_f64()),
+            Err(why) => eprintln!("Error: {}", why),
+        }
 
         canvas
     }
