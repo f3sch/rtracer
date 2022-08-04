@@ -124,6 +124,7 @@ mod test {
         assert_eq!(pattern.stripe_at(Point::new(0.9, 0.0, 0.0)), WHITE);
         assert_eq!(pattern.stripe_at(Point::new(1.0, 0.0, 0.0)), BLACK);
         assert_eq!(pattern.stripe_at(Point::new(-0.1, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.stripe_at(Point::new(-1.0, 0.0, 0.0)), BLACK);
         assert_eq!(pattern.stripe_at(Point::new(-1.1, 0.0, 0.0)), WHITE);
     }
 }

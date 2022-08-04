@@ -51,7 +51,9 @@ impl Pattern for Ring {
     }
 
     fn pattern_at(&self, point: Point) -> RGB {
-        let tmp = (point.x * point.x + point.y * point.y).sqrt().floor();
+        let x = (point.x * 100.0).round() / 100.0;
+        let z = (point.z * 100.0).round() / 100.0;
+        let tmp = (x.powi(2) + z.powi(2)).sqrt().floor();
         if float_eq(tmp % 2.0, 0.0) {
             return self.a;
         }
@@ -70,7 +72,7 @@ mod test {
 
         assert_eq!(pattern.pattern_at(Point::new(0.0, 0.0, 0.0)), WHITE);
         assert_eq!(pattern.pattern_at(Point::new(1.0, 0.0, 0.0)), BLACK);
-        assert_eq!(pattern.pattern_at(Point::new(0.0, 0.0, 1.0)), WHITE);
-        assert_eq!(pattern.pattern_at(Point::new(0.708, 0.0, 0.708)), WHITE);
+        assert_eq!(pattern.pattern_at(Point::new(0.0, 0.0, 1.0)), BLACK);
+        assert_eq!(pattern.pattern_at(Point::new(0.708, 0.0, 0.708)), BLACK);
     }
 }
