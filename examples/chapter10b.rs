@@ -7,7 +7,7 @@ fn main() {
     let mut floor = Plane::new();
     floor.get_material_mut().color = RGB::new(1.0, 0.9, 0.9);
     floor.get_material_mut().specular = 0.0;
-    let mut pattern = Checkers::checkers_pattern(BLUE, GREEN);
+    let mut pattern = Ring::ring_pattern(WHITE, BLACK);
     pattern.set_transform(
         Transformation::new()
             .scaling(0.5, 0.5, 0.5)
@@ -38,7 +38,8 @@ fn main() {
     right.get_material_mut().color = RGB::new(0.5, 1.0, 0.1);
     right.get_material_mut().diffuse = 0.7;
     right.get_material_mut().specular = 0.3;
-    let pattern = Ring::ring_pattern(BLACK, WHITE);
+    let mut pattern = Gradient::gradient_pattern(RED, BLACK);
+    pattern.set_transform(Transformation::new().rotate_z(-PI / 2.0));
     set_pattern!(right, pattern);
     add_object!(world, right);
 
@@ -51,7 +52,13 @@ fn main() {
     left.get_material_mut().color = RGB::new(1.0, 0.8, 0.1);
     left.get_material_mut().diffuse = 0.7;
     left.get_material_mut().specular = 0.3;
-    let pattern = Gradient::gradient_pattern(RED, BLUE);
+    let mut pattern = Checkers::checkers_pattern(RED, WHITE);
+    pattern.set_transform(
+        Transformation::new()
+            .scaling(0.1, 0.1, 0.1)
+            .rotate_y(PI / 3.0)
+            .rotate_y(PI / 4.0),
+    );
     set_pattern!(left, pattern);
     add_object!(world, left);
 
@@ -60,7 +67,7 @@ fn main() {
         RGB::new(1.0, 1.0, 1.0),
     ));
 
-    let mut camera = Camera::new(400, 400, PI / 3.0);
+    let mut camera = Camera::new(1280, 1280, PI / 3.0);
 
     camera.transform = Transformation::view_transformation(
         Point::new(0.0, 1.5, -5.0),
