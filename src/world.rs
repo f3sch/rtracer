@@ -69,7 +69,7 @@ impl World {
         let surface = comps.object.get_material().lightning(
             comps.object,
             self.light.expect("World has no light!"),
-            comps.point,
+            comps.over_point,
             comps.eyev,
             comps.normalv,
             shadowed,
