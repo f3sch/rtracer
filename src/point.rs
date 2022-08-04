@@ -55,6 +55,18 @@ impl Sub for Point {
     }
 }
 
+impl Sub<Vector> for Point {
+    type Output = Self;
+
+    fn sub(self, other: Vector) -> Self {
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
 impl Neg for Point {
     type Output = Self;
     fn neg(self) -> Self {

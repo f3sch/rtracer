@@ -2,7 +2,7 @@ use crate::*;
 use uuid::Uuid;
 
 /// Checkers pattern.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Checkers {
     /// Id.
     uuid: Uuid,

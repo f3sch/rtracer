@@ -27,6 +27,17 @@ impl Sphere {
     pub fn set_color(&mut self, color: RGB) {
         self.material.color = color;
     }
+
+    pub fn glass_sphere() -> Self {
+        let mut m = Material::default();
+        m.transparency = 1.0;
+        m.refractive_index = 1.5;
+        Self {
+            uuid: Uuid::new_v4(),
+            transform: Transformation::new(),
+            material: m,
+        }
+    }
 }
 
 impl Shape for Sphere {
@@ -264,5 +275,13 @@ mod test {
         let n = s.normal_at(Point::new(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt()) / 2.0));
 
         assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254));
+    }
+
+    #[test]
+    fn glass_sphere() {
+        let s = Sphere::glass_sphere();
+
+        assert_eq!(s.material.transparency, 1.0);
+        assert_eq!(s.material.refractive_index, 1.5);
     }
 }

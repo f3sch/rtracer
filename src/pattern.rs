@@ -49,3 +49,5 @@ pub mod ring;
 pub use ring::Ring;
 pub mod checkers;
 pub use checkers::Checkers;
+pub mod test_pattern;
+pub use test_pattern::TestPattern;

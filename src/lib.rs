@@ -61,7 +61,6 @@ pub use crate::shapes::Shape;
 pub use crate::shapes::Sphere;
 
 mod intersection;
-pub use crate::intersection::hit;
 pub use crate::intersection::Intersection;
 
 mod light;

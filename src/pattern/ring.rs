@@ -2,7 +2,7 @@ use crate::*;
 use uuid::Uuid;
 
 /// Ring pattern.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Ring {
     /// Id.
     uuid: Uuid,

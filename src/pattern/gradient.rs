@@ -2,7 +2,7 @@ use crate::*;
 use uuid::Uuid;
 
 /// Gradient pattern.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Gradient {
     /// Id.
     uuid: Uuid,

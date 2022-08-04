@@ -23,6 +23,39 @@ pub struct Computation<'a> {
     /// over_point represents what?
     pub over_point: Point,
 
+    /// under_point represents what?
+    pub under_point: Point,
+
     /// where to reflect
     pub reflectv: Vector,
+
+    /// Refraction 1.
+    pub n1: f64,
+
+    /// Refraction 2.
+    pub n2: f64,
+}
+
+impl Computation<'_> {
+    /// Fresnel effect.
+    pub fn schlick(&self) -> f64 {
+        // find the cosine of the angle between the eye and normal vector
+        let mut cos = self.eyev.dot(self.normalv);
+
+        // total internal reflection can only occur if n1 > n2
+        if self.n1 > self.n2 {
+            let n = self.n1 / self.n2;
+            let sin2_t = n.powi(2) * (1.0 - cos.powi(2));
+            if sin2_t > 1.0 {
+                return 1.0;
+            }
+
+            // computer cosine of theta_t using trig identity
+            // when n1 > n2 use cos(theta_t) instead
+            cos = (1.0 - sin2_t).sqrt();
+        }
+
+        let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powi(2);
+        r0 + (1.0 - r0) * (1.0 - cos).powi(5)
+    }
 }
