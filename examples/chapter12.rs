@@ -193,7 +193,7 @@ fn main() {
 
     let canvas = camera.render(&world);
 
-    let path = Path::new("chapter_12.ppm");
+    let path = Path::new("ch12.ppm");
     let display = path.display();
 
     let mut file = match File::create(&path) {
