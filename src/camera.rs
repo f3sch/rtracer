@@ -1,6 +1,6 @@
 use crate::*;
 use progress_bar::*;
-use rayon::prelude::*;
+// use rayon::prelude::*;
 use std::time::SystemTime;
 
 /// Just like a real camera, the virtual camera allows moving around in the scene.
