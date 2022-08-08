@@ -23,6 +23,14 @@ impl RGB {
         let c_blue = clamp(self.blue);
         format!("{} {} {}", c_red, c_green, c_blue)
     }
+
+    pub fn from_u8(red: u8, green: u8, blue: u8) -> Self {
+        Self {
+            red: red as f64 / 255.0,
+            green: green as f64 / 255.0,
+            blue: blue as f64 / 255.0,
+        }
+    }
 }
 
 // clamp function for RGB
