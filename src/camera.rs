@@ -85,15 +85,15 @@ impl Camera {
         let mut canvas = Canvas::new(self.hsize, self.vsize);
 
         let now = SystemTime::now();
-        (0..self.hsize).for_each(|y| {
-            (0..self.vsize).for_each(|x| {
+        for y in 0..self.vsize {
+            for x in 0..self.hsize {
                 let ray = self.ray_for_pixel(x, y);
-                let color = world.color_at(&ray, 4);
+                let color = world.color_at(&ray, 5);
 
                 canvas.write_pixel(x, y, color);
                 inc_progress_bar();
-            })
-        });
+            }
+        }
         finalize_progress_bar();
         match now.elapsed() {
             Ok(elapsed) => println!("The render took {:.3} seconds", elapsed.as_secs_f64()),

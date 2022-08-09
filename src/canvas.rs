@@ -1,5 +1,7 @@
 use crate::{color::RGB, BLACK};
 
+const MAXIMUM_PPM_LINE_LENGTH: usize = 70;
+
 /// Canvas object
 #[derive(Debug)]
 pub struct Canvas {
@@ -22,41 +24,44 @@ impl Canvas {
     }
 
     pub fn write_pixel(&mut self, x: usize, y: usize, color: RGB) {
-        self.pixels[x + y * self.width] = color;
+        let i = x + y * self.width;
+        self.pixels[i] = color;
     }
 
     pub fn to_ppm(&self) -> String {
-        let mut ppm = String::new();
-        let mut counter: usize = 0;
+        let mut buffer = ["P3", &format!("{} {}", self.width, self.height), "255"].join("\n");
+        buffer.push('\n');
 
-        // Header
-        ppm.push_str("P3\n");
-        ppm.push_str(&format!("{} {}\n", self.width, self.height));
-        ppm.push_str("255\n");
-
-        // Colors
+        let mut col_counter = 0;
         for y in 0..self.height {
             for x in 0..self.width {
-                let tmp = &self.pixels[x + y * self.width].ppm_clamp();
-                counter += tmp.len();
-                ppm.push_str(tmp);
-                if counter >= 70 {
-                    ppm.push_str("\n");
-                    counter = 0;
-                } else {
-                    ppm.push_str(" ");
+                let pixel = self.pixel_at(x, y);
+
+                for c in pixel.rgb_string_array().iter() {
+                    if col_counter + c.len() + 1 > MAXIMUM_PPM_LINE_LENGTH {
+                        buffer += "\n";
+                        col_counter = 0;
+                    }
+                    if col_counter > 0 {
+                        buffer += " ";
+                    }
+                    buffer += c;
+                    col_counter += c.len() + 1;
                 }
             }
-            ppm.push_str("\n"); // end with newline
-            counter = 0;
+            buffer.push('\n');
+            col_counter = 0;
         }
+        buffer.push('\n');
 
-        ppm
+        buffer
     }
 
     /// Return the color at the given pixel.
     pub fn pixel_at(&self, x: usize, y: usize) -> RGB {
-        self.pixels[x + y * self.width]
+        let i = x + y * self.width;
+
+        self.pixels[i]
     }
 }
 
@@ -105,7 +110,7 @@ mod test {
         c.write_pixel(2, 1, c2);
         c.write_pixel(4, 2, c3);
         let ppm = c.to_ppm();
-        let correct = String::from("P3\n5 3\n255\n255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n0 0 0 0 0 0 0 127 0 0 0 0 0 0 0 \n0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 \n");
+        let correct = String::from("P3\n5 3\n255\n255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 127 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 0 0 0 0 0 0 0 255\n\n");
 
         assert_eq!(ppm, correct);
     }
@@ -120,7 +125,7 @@ mod test {
             }
         }
         let ppm = c.to_ppm();
-        let correct = String::from("P3\n10 2\n255\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 \n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 \n");
+        let correct = String::from("P3\n10 2\n255\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n\n");
 
         assert_eq!(ppm, correct);
     }

@@ -31,6 +31,15 @@ impl RGB {
             blue: blue as f64 / 255.0,
         }
     }
+
+    /// Get an array of the  parts of a `Color` as [`u8`] in string format. The
+    pub fn rgb_string_array(&self) -> [String; 3] {
+        [
+            format!("{}", clamp(self.red)),
+            format!("{}", clamp(self.green)),
+            format!("{}", clamp(self.blue)),
+        ]
+    }
 }
 
 // clamp function for RGB
