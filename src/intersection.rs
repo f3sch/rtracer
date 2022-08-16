@@ -24,10 +24,15 @@ impl<'a> Intersection<'a> {
     }
 
     /// Pre-compute some information.
-    pub fn prepare_computations(&self, r: &Ray, xs: &Vec<Intersection>) -> Computation {
+    pub fn prepare_computations(
+        &self,
+        r: &Ray,
+        xs: &Vec<Intersection>,
+        w: Option<&World>,
+    ) -> Computation {
         let point = r.position(self.t);
         let eyev = -r.direction();
-        let mut normalv = self.object.normal_at(point);
+        let mut normalv = self.object.normal_at(point, w);
         let mut inside = false;
 
         if normalv.dot(eyev) < 0.0 {
@@ -181,7 +186,7 @@ mod test {
         let s = Sphere::new();
         let i = Intersection::new(4.0, &s);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
 
         assert_eq!(comps.t, i.t);
         assert!(comps.object.eq(&s));
@@ -196,7 +201,7 @@ mod test {
         let shape = Sphere::new();
         let i = Intersection::new(4.0, &shape);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
 
         assert!(!comps.inside);
     }
@@ -207,7 +212,7 @@ mod test {
         let shape = Sphere::new();
         let i = Intersection::new(1.0, &shape);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
 
         assert_eq!(comps.point, Point::new(0.0, 0.0, 1.0));
         assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
@@ -222,7 +227,7 @@ mod test {
         shape.set_transform(Transformation::new().translation(0.0, 0.0, 1.0));
         let i = Intersection::new(5.0, &shape);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
 
         assert!(comps.over_point.z < -EPSILON / 2.0);
         assert!(comps.point.z > comps.over_point.z);
@@ -237,7 +242,7 @@ mod test {
         );
         let i = Intersection::new(2_f64.sqrt(), &shape);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
 
         assert_eq!(
             comps.reflectv,
@@ -274,7 +279,7 @@ mod test {
         ];
 
         for i in 0..5 {
-            let comps = xs[i].prepare_computations(&r, &xs);
+            let comps = xs[i].prepare_computations(&r, &xs, None);
             assert_eq!(expected[i].0, comps.n1);
             assert_eq!(expected[i].1, comps.n2);
         }
@@ -287,7 +292,7 @@ mod test {
         shape.set_transform(Transformation::new().translation(0.0, 0.0, 1.0));
         let i = Intersection::new(5.0, &shape);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
 
         assert!(comps.under_point.z > EPSILON / 2.0);
         assert!(comps.point.z < comps.under_point.z);
@@ -304,7 +309,7 @@ mod test {
             Intersection::new(-2_f64.sqrt() / 2.0, &shape),
             Intersection::new(2_f64.sqrt() / 2.0, &shape),
         ];
-        let comps = xs[1].prepare_computations(&r, &xs);
+        let comps = xs[1].prepare_computations(&r, &xs, None);
         let reflectance = comps.schlick();
 
         assert_eq!(reflectance, 1.0);
@@ -318,7 +323,7 @@ mod test {
             Intersection::new(-1.0, &shape),
             Intersection::new(1.0, &shape),
         ];
-        let comps = xs[1].prepare_computations(&r, &xs);
+        let comps = xs[1].prepare_computations(&r, &xs, None);
         let reflectance = comps.schlick();
 
         assert!(float_eq(reflectance, 0.04));
@@ -329,7 +334,7 @@ mod test {
         let shape = Sphere::glass_sphere();
         let r = Ray::new(Point::new(0.0, 0.99, -2.0), Vector::new(0.0, 0.0, 1.0));
         let xs = vec![Intersection::new(1.8589, &shape)];
-        let comps = xs[0].prepare_computations(&r, &xs);
+        let comps = xs[0].prepare_computations(&r, &xs, None);
         let reflectance = comps.schlick();
 
         assert!(float_eq(reflectance, 0.48873));

@@ -22,6 +22,9 @@ pub struct Cylinder {
 
     /// Is the cylinder closed.
     closed: bool,
+
+    /// Parent id
+    parent: Option<Uuid>,
 }
 
 impl Cylinder {
@@ -34,6 +37,7 @@ impl Cylinder {
             minimum: NEG_INFINITY,
             maximum: INFINITY,
             closed: false,
+            parent: None,
         }
     }
 
@@ -93,6 +97,14 @@ impl Cylinder {
 impl Shape for Cylinder {
     fn id(&self) -> Uuid {
         self.uuid
+    }
+
+    fn parent_id(&self) -> Option<Uuid> {
+        self.parent
+    }
+
+    fn set_parent_id(&mut self, id: Uuid) {
+        self.parent = Some(id);
     }
 
     fn get_material(&self) -> &Material {

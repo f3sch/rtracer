@@ -1,4 +1,5 @@
 use crate::*;
+use uuid::Uuid;
 
 /// A world holds every shape and a light source.
 pub struct World {
@@ -42,6 +43,21 @@ impl World {
             Some(obj) => Some(obj.as_mut()),
             None => None,
         }
+    }
+
+    /// Return a reference to a Shape.    
+    pub fn get_object_by_id(&self, id: Uuid) -> Option<&dyn Shape> {
+        for s in &self.objects {
+            if s.id() == id {
+                return Some(s.as_ref());
+            }
+
+            if let Some(c) = s.get_object_by_id(id) {
+                return Some(c);
+            }
+        }
+
+        None
     }
 
     /// Calculate the intersection of a ray in this world.
@@ -91,7 +107,7 @@ impl World {
         match self.intersect_world(ray) {
             Some(xs) => match Intersection::hit(&xs) {
                 Some(i) => {
-                    let comps = i.prepare_computations(&ray, &xs);
+                    let comps = i.prepare_computations(&ray, &xs, None);
                     self.shade_hit(&comps, remaining)
                 }
                 None => BLACK,
@@ -253,7 +269,7 @@ mod test {
             .expect("Default world should have two shapes!");
         let i = Intersection::new(4.0, shape);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
         let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, RGB::new(0.38066, 0.47583, 0.2855));
@@ -269,7 +285,7 @@ mod test {
             .expect("Default world should have two shapes!");
         let i = Intersection::new(0.5, shape);
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
         let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, RGB::new(0.90498, 0.90498, 0.90498));
@@ -359,7 +375,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let i = Intersection::new(4.0, w.get_object(1).expect("Where is it?"));
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
         let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, RGB::new(0.1, 0.1, 0.1));
@@ -375,7 +391,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let i = Intersection::new(1.0, w.get_object(1).expect("Default world has 2 spheres"));
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
         let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, BLACK);
@@ -397,7 +413,7 @@ mod test {
             w.get_object(2).expect("I just added this plane?"),
         );
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
         let color = w.reflected_color(&comps, 4);
 
         assert_eq!(color, RGB::new(0.19032, 0.2379, 0.14274));
@@ -419,7 +435,7 @@ mod test {
             w.get_object(2).expect("I just added this plane?"),
         );
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
         let color = w.shade_hit(&comps, 4);
 
         assert_eq!(color, RGB::new(0.87677, 0.92436, 0.82918));
@@ -458,7 +474,7 @@ mod test {
             w.get_object(2).expect("I just added this plane?"),
         );
         let xs = &vec![i];
-        let comps = i.prepare_computations(&r, xs);
+        let comps = i.prepare_computations(&r, xs, None);
         let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, BLACK);
@@ -470,7 +486,7 @@ mod test {
         let shape = w.get_object(0).expect("Must be here");
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let xs = vec![Intersection::new(4.0, shape), Intersection::new(6.0, shape)];
-        let comps = xs[0].prepare_computations(&r, &xs);
+        let comps = xs[0].prepare_computations(&r, &xs, None);
         let c = w.refracted_color(&comps, 5);
 
         assert_eq!(c, BLACK);
@@ -489,7 +505,7 @@ mod test {
             Intersection::new(4.0, w.get_object(0).expect("how")),
             Intersection::new(6.0, w.get_object(0).expect("where")),
         ];
-        let comps = xs[0].prepare_computations(&r, &xs);
+        let comps = xs[0].prepare_computations(&r, &xs, None);
         let c = w.refracted_color(&comps, 0);
 
         assert_eq!(c, BLACK);
@@ -511,7 +527,7 @@ mod test {
             Intersection::new(-2_f64.sqrt() / 2.0, w.get_object(0).expect("how")),
             Intersection::new(2_f64.sqrt() / 2.0, w.get_object(0).expect("where")),
         ];
-        let comps = xs[1].prepare_computations(&r, &xs);
+        let comps = xs[1].prepare_computations(&r, &xs, None);
         let c = w.refracted_color(&comps, 5);
 
         assert_eq!(c, BLACK);
@@ -535,7 +551,7 @@ mod test {
             Intersection::new(0.4899, w.get_object(1).expect("how")),
             Intersection::new(0.9899, w.get_object(0).expect("how")),
         ];
-        let comps = xs[2].prepare_computations(&r, &xs);
+        let comps = xs[2].prepare_computations(&r, &xs, None);
         let c = w.refracted_color(&comps, 5);
 
         assert_eq!(c, RGB::new(0.0, 0.99888, 0.04725));
@@ -563,7 +579,7 @@ mod test {
             2_f64.sqrt(),
             w.get_object(2).expect("how"),
         )];
-        let comps = xs[0].prepare_computations(&r, &xs);
+        let comps = xs[0].prepare_computations(&r, &xs, None);
         let c = w.shade_hit(&comps, 5);
 
         assert_eq!(c, RGB::new(0.93391, 0.69643, 0.69243));

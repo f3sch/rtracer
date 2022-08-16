@@ -59,6 +59,7 @@ pub mod shapes;
 pub use crate::shapes::Cone;
 pub use crate::shapes::Cube;
 pub use crate::shapes::Cylinder;
+pub use crate::shapes::Group;
 pub use crate::shapes::Plane;
 pub use crate::shapes::Shape;
 pub use crate::shapes::Sphere;

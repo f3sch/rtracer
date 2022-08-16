@@ -7,6 +7,9 @@ pub struct Plane {
     uuid: Uuid,
     transform: Transformation,
     material: Material,
+
+    /// Parent id
+    parent: Option<Uuid>,
 }
 
 impl Plane {
@@ -15,6 +18,7 @@ impl Plane {
             uuid: Uuid::new_v4(),
             transform: Transformation::new(),
             material: Material::default(),
+            parent: None,
         }
     }
 }
@@ -22,6 +26,14 @@ impl Plane {
 impl Shape for Plane {
     fn id(&self) -> Uuid {
         self.uuid
+    }
+
+    fn parent_id(&self) -> Option<Uuid> {
+        self.parent
+    }
+
+    fn set_parent_id(&mut self, id: Uuid) {
+        self.parent = Some(id);
     }
 
     fn get_material(&self) -> &Material {

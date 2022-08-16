@@ -64,7 +64,7 @@ fn draw_shape(shape: &dyn Shape, light: &PointLight, file_name: &str) {
             if xs.is_some() {
                 let xs = xs.unwrap();
                 let point = r.position(xs[0].t);
-                let normal = xs[0].object.normal_at(point);
+                let normal = xs[0].object.normal_at(point, None);
                 let eye = -r.direction;
                 let color = xs[0]
                     .object

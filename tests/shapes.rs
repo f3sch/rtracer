@@ -8,6 +8,7 @@ struct TestShape {
     uuid: Uuid,
     material: Material,
     transform: Transformation,
+    parent: Option<Uuid>,
 }
 
 static mut SAVE_RAY: Ray = Ray {
@@ -26,6 +27,14 @@ static mut SAVE_RAY: Ray = Ray {
 impl Shape for TestShape {
     fn id(&self) -> Uuid {
         self.uuid
+    }
+
+    fn parent_id(&self) -> Option<Uuid> {
+        self.parent
+    }
+
+    fn set_parent_id(&mut self, id: Uuid) {
+        self.parent = Some(id);
     }
 
     fn get_material(&self) -> &Material {
@@ -87,31 +96,6 @@ fn set_transform() {
     );
 }
 
-// #[test]
-// fn default_material() {
-//     let s = TestShape::default();
-//     let m = s.get_material();
-
-//     assert_eq!(m, Material::default());
-// }
-
-// #[test]
-// fn set_material() {
-//     let mut s = TestShape::default();
-//     let mut m = s.get_material_mut();
-//     m.ambient = 1.0;
-//     let m = Material {
-//         color: m.color,
-//         ambient: m.ambient,
-//         diffuse: m.diffuse,
-//         specular: m.specular,
-//         shinniness: m.shinniness,
-//         pattern: None,
-//     };
-
-//     assert_eq!(s.material, m);
-// }
-
 #[test]
 fn intersect_scaled_shape_ray() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
@@ -142,7 +126,7 @@ fn intersect_translated_shape_ray() {
 fn normal_translated_shape() {
     let mut s = TestShape::default();
     s.set_transform(Transformation::new().translation(0.0, 1.0, 0.0));
-    let n = s.normal_at(Point::new(0.0, 1.70711, -0.70711));
+    let n = s.normal_at(Point::new(0.0, 1.70711, -0.70711), None);
 
     assert_eq!(n, Vector::new(0.0, 0.70711, -0.70711));
 }
@@ -154,7 +138,94 @@ fn normal_transformed_shape() {
         .rotate_z(PI / 5.0)
         .scaling(1.0, 0.5, 1.0);
     s.set_transform(m);
-    let n = s.normal_at(Point::new(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt() / 2.0)));
+    let n = s.normal_at(
+        Point::new(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt() / 2.0)),
+        None,
+    );
 
     assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254));
+}
+
+#[test]
+fn parent_shape() {
+    let s = TestShape::default();
+
+    assert!(s.parent_id().is_none());
+}
+
+#[test]
+fn convert_object_space() {
+    let mut w = World::new();
+
+    let mut g1 = Group::new();
+    g1.set_transform(Transformation::new().rotate_y(PI / 2.0));
+
+    let mut g2 = Group::new();
+    g2.set_transform(Transformation::new().scaling(2.0, 2.0, 2.0));
+
+    let mut s = Sphere::new();
+    let s_id = s.id();
+    s.set_transform(Transformation::new().translation(5.0, 0.0, 0.0));
+
+    g2.add_object(Box::new(s));
+    g1.add_object(Box::new(g2));
+    add_object!(w, g1);
+
+    let s = w.get_object_by_id(s_id).unwrap();
+
+    let p = s.world_to_object(Point::new(-2.0, 0.0, -10.0), &w);
+    assert_eq!(p, Point::new(0.0, 0.0, -1.0));
+}
+
+#[test]
+fn convert_normal_object_world_space() {
+    let mut w = World::new();
+
+    let mut g1 = Group::new();
+    g1.set_transform(Transformation::new().rotate_y(PI / 2.0));
+
+    let mut g2 = Group::new();
+    g2.set_transform(Transformation::new().scaling(1.0, 2.0, 3.0));
+
+    let mut s = Sphere::new();
+    let s_id = s.id();
+    s.set_transform(Transformation::new().translation(5.0, 0.0, 0.0));
+
+    g2.add_object(Box::new(s));
+    g1.add_object(Box::new(g2));
+    w.add_object(Box::new(g1));
+
+    let s = w.get_object_by_id(s_id).unwrap();
+
+    let p = s.normal_to_world(
+        Vector::new(3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0),
+        &w,
+    );
+
+    assert_eq!(p, Vector::new(0.2857, 0.4286, -0.8571));
+}
+
+#[test]
+fn find_normal_child_object() {
+    let mut w = World::new();
+
+    let mut g1 = Group::new();
+    g1.set_transform(Transformation::new().rotate_y(PI / 2.0));
+
+    let mut g2 = Group::new();
+    g2.set_transform(Transformation::new().scaling(1.0, 2.0, 3.0));
+
+    let mut s = Sphere::new();
+    let s_id = s.id();
+    s.set_transform(Transformation::new().translation(5.0, 0.0, 0.0));
+
+    g2.add_object(Box::new(s));
+    g1.add_object(Box::new(g2));
+    w.add_object(Box::new(g1));
+
+    let s = w.get_object_by_id(s_id).unwrap();
+
+    let p = s.normal_at(Point::new(1.7321, 1.1547, -5.5774), Some(&w));
+
+    assert_eq!(p, Vector::new(0.2857, 0.4286, -0.8571));
 }

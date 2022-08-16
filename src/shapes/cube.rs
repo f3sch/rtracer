@@ -12,6 +12,9 @@ pub struct Cube {
 
     /// The material of a sphere
     material: Material,
+
+    /// Parent id
+    parent: Option<Uuid>,
 }
 
 impl Cube {
@@ -21,6 +24,7 @@ impl Cube {
             uuid: Uuid::new_v4(),
             transform: Transformation::new(),
             material: Material::default(),
+            parent: None,
         }
     }
 
@@ -46,6 +50,14 @@ fn check_axis(origin: f64, direction: f64) -> (f64, f64) {
 impl Shape for Cube {
     fn id(&self) -> Uuid {
         self.uuid
+    }
+
+    fn parent_id(&self) -> Option<Uuid> {
+        self.parent
+    }
+
+    fn set_parent_id(&mut self, id: Uuid) {
+        self.parent = Some(id);
     }
 
     fn get_material(&self) -> &Material {

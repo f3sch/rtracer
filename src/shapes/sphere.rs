@@ -12,6 +12,9 @@ pub struct Sphere {
 
     /// The material of a sphere
     material: Material,
+
+    /// Parent id
+    parent: Option<Uuid>,
 }
 
 impl Sphere {
@@ -21,6 +24,7 @@ impl Sphere {
             uuid: Uuid::new_v4(),
             transform: Transformation::new(),
             material: Material::default(),
+            parent: None,
         }
     }
 
@@ -36,6 +40,7 @@ impl Sphere {
             uuid: Uuid::new_v4(),
             transform: Transformation::new(),
             material: m,
+            parent: None,
         }
     }
 }
@@ -43,6 +48,14 @@ impl Sphere {
 impl Shape for Sphere {
     fn id(&self) -> Uuid {
         self.uuid
+    }
+
+    fn parent_id(&self) -> Option<Uuid> {
+        self.parent
+    }
+
+    fn set_parent_id(&mut self, id: Uuid) {
+        self.parent = Some(id);
     }
 
     fn get_material(&self) -> &Material {
@@ -209,7 +222,7 @@ mod test {
     #[test]
     fn normal_x_sphere() {
         let s = Sphere::new();
-        let n = s.normal_at(Point::new(1.0, 0.0, 0.0));
+        let n = s.normal_at(Point::new(1.0, 0.0, 0.0), None);
 
         assert_eq!(n, Vector::new(1.0, 0.0, 0.0));
     }
@@ -217,7 +230,7 @@ mod test {
     #[test]
     fn normal_y_sphere() {
         let s = Sphere::new();
-        let n = s.normal_at(Point::new(0.0, 1.0, 0.0));
+        let n = s.normal_at(Point::new(0.0, 1.0, 0.0), None);
 
         assert_eq!(n, Vector::new(0.0, 1.0, 0.0));
     }
@@ -225,7 +238,7 @@ mod test {
     #[test]
     fn normal_z_sphere() {
         let s = Sphere::new();
-        let n = s.normal_at(Point::new(0.0, 0.0, 1.0));
+        let n = s.normal_at(Point::new(0.0, 0.0, 1.0), None);
 
         assert_eq!(n, Vector::new(0.0, 0.0, 1.0));
     }
@@ -233,11 +246,10 @@ mod test {
     #[test]
     fn normal_notaxial_sphere() {
         let s = Sphere::new();
-        let n = s.normal_at(Point::new(
-            3_f64.sqrt() / 3.0,
-            3_f64.sqrt() / 3.0,
-            3_f64.sqrt() / 3.0,
-        ));
+        let n = s.normal_at(
+            Point::new(3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0),
+            None,
+        );
 
         assert_eq!(
             n,
@@ -248,11 +260,10 @@ mod test {
     #[test]
     fn normal_normalize_sphere() {
         let s = Sphere::new();
-        let n = s.normal_at(Point::new(
-            3_f64.sqrt() / 3.0,
-            3_f64.sqrt() / 3.0,
-            3_f64.sqrt() / 3.0,
-        ));
+        let n = s.normal_at(
+            Point::new(3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0),
+            None,
+        );
 
         assert_eq!(n.normalize(), n);
     }
@@ -261,7 +272,7 @@ mod test {
     fn normal_translated_sphere() {
         let mut s = Sphere::new();
         s.set_transform(Transformation::new().translation(0.0, 1.0, 0.0));
-        let n = s.normal_at(Point::new(0.0, 1.70711, -0.70711));
+        let n = s.normal_at(Point::new(0.0, 1.70711, -0.70711), None);
 
         assert_eq!(n, Vector::new(0.0, 0.70711, -0.70711));
     }
@@ -272,7 +283,10 @@ mod test {
         let t1 = Transformation::new().scaling(1.0, 0.5, 1.0);
         let t2 = Transformation::new().rotate_z(PI / 5.0);
         s.set_transform(t1 * t2);
-        let n = s.normal_at(Point::new(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt()) / 2.0));
+        let n = s.normal_at(
+            Point::new(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt()) / 2.0),
+            None,
+        );
 
         assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254));
     }
